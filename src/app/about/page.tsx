@@ -8,9 +8,14 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { Mountain, Sprout, HeartHandshake, ShieldCheck, ArrowRight, MapPin } from 'lucide-react';
 
 export default async function AboutPage() {
-  const settings = await prisma.businessSettings.findUnique({
-    where: { id: 'default-settings' },
-  });
+  let settings = null;
+  try {
+    settings = await prisma.businessSettings.findUnique({
+      where: { id: 'default-settings' },
+    });
+  } catch (error) {
+    console.warn('Database query fallback during AboutPage render:', error);
+  }
 
   const aboutStory =
     settings?.aboutStory ||

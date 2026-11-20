@@ -13,25 +13,30 @@ import { ArrowRight, ShoppingCart, Play, Star, MessageSquare } from 'lucide-reac
 export const revalidate = 60;
 
 async function getHomepageData() {
-  const [settings, categories, featuredProducts] = await Promise.all([
-    prisma.businessSettings.findUnique({ where: { id: 'default-settings' } }),
-    prisma.category.findMany({
-      where: { isActive: true },
-      include: {
-        _count: {
-          select: { products: { where: { isActive: true } } },
+  try {
+    const [settings, categories, featuredProducts] = await Promise.all([
+      prisma.businessSettings.findUnique({ where: { id: 'default-settings' } }),
+      prisma.category.findMany({
+        where: { isActive: true },
+        include: {
+          _count: {
+            select: { products: { where: { isActive: true } } },
+          },
         },
-      },
-      orderBy: { displayOrder: 'asc' },
-    }),
-    prisma.product.findMany({
-      where: { isActive: true, isFeatured: true },
-      include: { category: true },
-      take: 6,
-      orderBy: { createdAt: 'desc' },
-    }),
-  ]);
-  return { settings, categories, featuredProducts };
+        orderBy: { displayOrder: 'asc' },
+      }),
+      prisma.product.findMany({
+        where: { isActive: true, isFeatured: true },
+        include: { category: true },
+        take: 6,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+    return { settings, categories, featuredProducts };
+  } catch (error) {
+    console.warn('Database fallback during homepage render:', error);
+    return { settings: null, categories: [], featuredProducts: [] };
+  }
 }
 
 export default async function HomePage() {
