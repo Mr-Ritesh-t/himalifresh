@@ -2,7 +2,7 @@
 // Supports SQLite for instant local zero-dependency testing & PostgreSQL for production
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
