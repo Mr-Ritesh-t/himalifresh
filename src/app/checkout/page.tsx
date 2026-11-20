@@ -1,0 +1,423 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { MobileNav } from '@/components/layout/MobileNav';
+import { MessageSquare, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, UserCheck } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function CheckoutPage() {
+  const router = useRouter();
+  const { items, subtotal, clearCart, isLoaded } = useCart();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  const [formData, setFormData] = useState({
+    customerName: '',
+    phone: '',
+    address: '',
+    city: '',
+    pincode: '',
+    landmark: '',
+    instructions: '',
+  });
+
+  useEffect(() => {
+    async function fetchMe() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setCurrentUser(data.user);
+            setFormData((prev) => ({
+              ...prev,
+              customerName: prev.customerName || data.user.name || '',
+              phone: prev.phone || data.user.phone || '',
+              address: prev.address || data.user.address || '',
+              city: prev.city || data.user.city || '',
+              pincode: prev.pincode || data.user.pincode || '',
+            }));
+          }
+        }
+      } catch (err) {
+        // Guest checkout continues without error
+      }
+    }
+    fetchMe();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (items.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    if (!formData.customerName.trim() || !formData.phone.trim() || !formData.address.trim() || !formData.city.trim() || !formData.pincode.trim()) {
+      toast.error('Please fill in all required delivery details');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        customerName: formData.customerName.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        pincode: formData.pincode.trim(),
+        landmark: formData.landmark.trim() || null,
+        instructions: formData.instructions.trim() || null,
+        items: items.map((i) => ({
+          productId: i.id,
+          quantity: i.quantity,
+        })),
+      };
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || 'Failed to submit order. Please try again.');
+        toast.error(data.error || 'Failed to submit order');
+        setLoading(false);
+        return;
+      }
+
+      // Order created successfully in database!
+      const { order, whatsappUrl } = data;
+
+      // Clear the shopping cart
+      clearCart();
+
+      // Open WhatsApp in new window
+      if (whatsappUrl) {
+        window.open(whatsappUrl, '_blank');
+      }
+
+      // Navigate to order-success page
+      router.push(
+        `/order-success?ref=${encodeURIComponent(order.orderNumber)}&name=${encodeURIComponent(
+          order.customerName
+        )}&total=${order.totalAmount}&whatsappUrl=${encodeURIComponent(whatsappUrl)}`
+      );
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      setError('A network error occurred. Please verify your connection.');
+      toast.error('A network error occurred.');
+      setLoading(false);
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-himali-cream/30">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-himali-primary"></div>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col bg-himali-cream/30">
+        <Header />
+        <main className="flex-1 py-16 text-center">
+          <div className="max-w-md mx-auto p-8 rounded-2xl bg-white border border-himali-border shadow-card">
+            <h2 className="font-serif text-2xl font-bold text-himali-dark mb-3">
+              Your cart is empty
+            </h2>
+            <p className="text-sm text-himali-muted mb-6">
+              Please add products to your cart before proceeding to checkout.
+            </p>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 rounded-full bg-himali-primary px-6 py-2.5 text-sm font-semibold text-white shadow"
+            >
+              Browse Products
+            </Link>
+          </div>
+        </main>
+        <Footer />
+        <MobileNav />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-himali-cream/30">
+      <Header />
+
+      <main className="flex-1 py-8 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Link
+              href="/cart"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-himali-green hover:underline"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Cart</span>
+            </Link>
+          </div>
+
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-himali-dark mb-2">
+            Checkout & Order Enquiry
+          </h1>
+          <p className="text-xs sm:text-sm text-himali-muted mb-8">
+            Complete your delivery details to generate an official order enquiry and connect with our Siliguri team via WhatsApp.
+          </p>
+
+          {error && (
+            <div className="mb-6 rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-800 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Delivery Information Form */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="rounded-2xl border border-himali-border bg-white p-6 shadow-card space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-himali-border gap-2">
+                  <h2 className="font-serif text-lg font-bold text-himali-dark">
+                    1. Customer & Delivery Address
+                  </h2>
+                  {currentUser ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      <UserCheck className="h-3.5 w-3.5 text-emerald-600" />
+                      Logged in as {currentUser.name}
+                    </span>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="text-xs font-semibold text-[#064B32] hover:underline"
+                    >
+                      Already have an account? Sign in →
+                    </Link>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-himali-dark mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="customerName"
+                      required
+                      value={formData.customerName}
+                      onChange={handleChange}
+                      placeholder="e.g. Tenzing Norbu"
+                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-himali-dark mb-1">
+                      Phone Number (with WhatsApp) *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="e.g. 9832078728"
+                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-himali-dark mb-1">
+                    Complete Street Address *
+                  </label>
+                  <textarea
+                    name="address"
+                    required
+                    rows={2}
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="House/Flat No., Building Name, Street"
+                    className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-himali-dark mb-1">
+                      City / Town *
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      required
+                      value={formData.city}
+                      onChange={handleChange}
+                      placeholder="e.g. Siliguri"
+                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-himali-dark mb-1">
+                      PIN Code *
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      required
+                      maxLength={6}
+                      value={formData.pincode}
+                      onChange={handleChange}
+                      placeholder="e.g. 734003"
+                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-himali-dark mb-1">
+                      Landmark (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="landmark"
+                      value={formData.landmark}
+                      onChange={handleChange}
+                      placeholder="e.g. Near Dagapur Bridge"
+                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-himali-dark mb-1">
+                    Special Instructions / Notes (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="instructions"
+                    value={formData.instructions}
+                    onChange={handleChange}
+                    placeholder="e.g. Preferred delivery time, gift packaging..."
+                    className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Notice Banner */}
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs text-emerald-900 flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-himali-green shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold mb-0.5">Direct Owner Confirmation via WhatsApp</p>
+                  <p className="leading-relaxed">
+                    Submitting this form records your enquiry in our secure database and opens WhatsApp with a prefilled message. The owner will review product availability, answer any questions, and confirm your payment and delivery arrangements.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary & Submit Button */}
+            <div className="rounded-2xl border border-himali-border bg-white p-6 shadow-card space-y-5">
+              <h2 className="font-serif text-lg font-bold text-himali-dark pb-3 border-b border-himali-border">
+                2. Order Summary
+              </h2>
+
+              <div className="max-h-60 overflow-y-auto divide-y divide-himali-border/60 text-xs">
+                {items.map((item) => (
+                  <div key={item.id} className="py-2.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-himali-cream/50">
+                        <Image
+                          src={item.mainImageUrl || '/images/hero-banner.jpg'}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-himali-dark line-clamp-1">{item.name}</p>
+                        <p className="text-himali-muted">
+                          {item.weight} × {item.quantity}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-himali-dark shrink-0">
+                      {formatPrice(item.price * item.quantity)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-3 border-t border-himali-border space-y-2 text-sm">
+                <div className="flex justify-between text-himali-muted text-xs">
+                  <span>Subtotal:</span>
+                  <span className="font-semibold text-himali-dark">{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-himali-muted text-xs">
+                  <span>Shipping:</span>
+                  <span className="text-himali-green font-medium">To be confirmed</span>
+                </div>
+                <div className="pt-2 border-t border-himali-border flex justify-between items-baseline">
+                  <span className="font-serif text-base font-bold text-himali-dark">
+                    Estimated Total:
+                  </span>
+                  <span className="text-2xl font-bold text-himali-primary">
+                    {formatPrice(subtotal)}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-himali-green py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition-all duration-200 disabled:opacity-60"
+              >
+                {loading ? (
+                  <span className="animate-pulse">Processing Order Enquiry...</span>
+                ) : (
+                  <>
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Submit & Chat on WhatsApp</span>
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center justify-center gap-2 text-[11px] text-himali-muted text-center pt-1">
+                <ShieldCheck className="h-3.5 w-3.5 text-himali-green shrink-0" />
+                <span>Zero upfront payment required on this form</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
+
+      <Footer />
+      <MobileNav />
+    </div>
+  );
+}

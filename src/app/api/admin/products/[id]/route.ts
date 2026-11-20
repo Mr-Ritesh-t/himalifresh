@@ -1,0 +1,87 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { productSchema } from '@/lib/validations';
+
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id } = await context.params;
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+
+    if (!product) {
+      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, product });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: 'Failed to fetch product' }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id } = await context.params;
+    const body = await request.json();
+
+    // Partial update or full update
+    const product = await prisma.product.update({
+      where: { id },
+      data: body,
+      include: {
+        category: true,
+      },
+    });
+
+    return NextResponse.json({ success: true, product });
+  } catch (error: any) {
+    console.error('Error updating product:', error);
+    return NextResponse.json({ success: false, error: 'Failed to update product' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { id } = await context.params;
+
+    // Soft delete by setting isActive: false or safe delete
+    await prisma.product.update({
+      where: { id },
+      data: { isActive: false, isAvailable: false },
+    });
+
+    return NextResponse.json({ success: true, message: 'Product archived successfully' });
+  } catch (error: any) {
+    console.error('Error deleting product:', error);
+    return NextResponse.json({ success: false, error: 'Failed to delete product' }, { status: 500 });
+  }
+}

@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    let settings = await prisma.businessSettings.findUnique({
+      where: { id: 'default-settings' },
+    });
+
+    if (!settings) {
+      settings = await prisma.businessSettings.create({
+        data: {
+          id: 'default-settings',
+          businessName: 'Himali Fresh',
+          tagline: 'The Spirit of Himalayas',
+          phone: '+91 98320 78728',
+          whatsappNumber: '919832078728',
+          email: 'info@himalifresh.com',
+          address: 'Dagapur, Siliguri, West Bengal, India',
+          mapUrl: 'https://maps.google.com/?q=Dagapur+Siliguri',
+          logoUrl: '/images/logo.jpg',
+          heroImageUrl: '/images/hero-banner.jpg',
+          announcement: 'Delivering Authentic Himalayan Products Across India',
+          homepageHeading: 'Pure & Authentic Himalayan Products',
+          homepageDescription: 'Traditional flavours, organic goodness and handcrafted products from the Himalayas.',
+          socialLinks: '{"facebook":"https://facebook.com","instagram":"https://instagram.com"}',
+          aboutStory: 'Founded in Siliguri, at the gateway to the Eastern Himalayas...',
+        },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      settings,
+    });
+  } catch (error: any) {
+    console.error('Error fetching settings:', error);
+    return NextResponse.json({ success: false, error: 'Failed to fetch settings' }, { status: 500 });
+  }
+}

@@ -1,0 +1,167 @@
+// Prisma Schema for Himali Fresh
+// Supports SQLite for instant local zero-dependency testing & PostgreSQL for production
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN") // ADMIN, SUPER_ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  phone        String?
+  passwordHash String
+  address      String?
+  city         String?
+  pincode      String?
+  orders       Order[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  displayOrder Int      @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id           String         @id @default(uuid())
+  name         String
+  slug         String         @unique
+  description  String
+  price        Float          // Decimal-safe in INR (paise precision managed in business layer)
+  weight       String         // e.g. "400 g", "1 kg", "250 g"
+  mainImageUrl String
+  categoryId   String
+  category     Category       @relation(fields: [categoryId], references: [id])
+  isAvailable  Boolean        @default(true)
+  isFeatured   Boolean        @default(false)
+  isActive     Boolean        @default(true)
+  images       ProductImage[]
+  orderItems   OrderItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([categoryId])
+  @@index([isFeatured])
+  @@index([isActive])
+}
+
+model ProductImage {
+  id           String   @id @default(uuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageUrl     String
+  altText      String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([productId])
+}
+
+model Order {
+  id           String               @id @default(uuid())
+  orderNumber  String               @unique // e.g. "HF-2026-1001"
+  customerName String
+  phone        String
+  address      String
+  city         String
+  pincode      String
+  landmark     String?
+  instructions String?
+  totalAmount  Float
+  status       String               @default("NEW") // NEW, CONTACTED, CONFIRMED, COMPLETED, CANCELLED
+  userId       String?
+  user         User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items        OrderItem[]
+  statusHistory OrderStatusHistory[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([orderNumber])
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                  String   @id @default(uuid())
+  orderId             String
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String?
+  product             Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productNameSnapshot String
+  unitPriceSnapshot   Float
+  quantity            Int
+  subtotal            Float
+  weightSnapshot      String?
+  createdAt           DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model BusinessSettings {
+  id                  String   @id @default("default-settings")
+  businessName        String   @default("Himali Fresh")
+  tagline             String   @default("The Spirit of Himalayas")
+  phone               String   @default("+91 98320 78728")
+  whatsappNumber      String   @default("919832078728")
+  email               String   @default("info@himalifresh.com")
+  address             String   @default("Dagapur, Siliguri, West Bengal, India")
+  mapUrl              String   @default("https://maps.google.com/?q=Dagapur+Siliguri")
+  logoUrl             String   @default("/images/logo.jpg")
+  heroImageUrl        String   @default("/images/hero-banner.jpg")
+  announcement        String   @default("Delivering Authentic Himalayan Products Across India")
+  homepageHeading     String   @default("Pure & Authentic Himalayan Products")
+  homepageDescription String   @default("Traditional flavours, organic goodness and handcrafted products from the Himalayas.")
+  socialLinks         String   @default("{\"facebook\":\"https://facebook.com\",\"instagram\":\"https://instagram.com\"}")
+  aboutStory          String   @default("Founded in Siliguri, at the gateway to the Eastern Himalayas, Himali Fresh connects traditional hill communities, organic farmers, and artisan food makers with households across India.")
+  updatedAt           DateTime @updatedAt
+}
+
+model OrderStatusHistory {
+  id             String   @id @default(uuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  previousStatus String
+  newStatus      String
+  changedBy      String   @default("Admin")
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
