@@ -38,12 +38,16 @@ export async function POST(request: NextRequest) {
     // Create unique filename
     const ext = path.extname(file.name) || '.jpg';
     const cleanBaseName = path.basename(file.name, ext).replace(/[^\w-]/g, '');
-    const filename = `${cleanBaseName}-${Date.now()}${ext}`;
+    const filename = `${cleanBaseName || 'upload'}-${Date.now()}${ext}`;
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
     // If Vercel Blob is configured (Production on Vercel)
     if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const blob = await put(`products/${filename}`, file, {
+      const blob = await put(`products/${filename}`, buffer, {
         access: 'public',
+        contentType: file.type,
       });
 
       return NextResponse.json({
@@ -53,10 +57,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Fallback: Local filesystem (Local development)
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // If running in production (e.g. Vercel) without BLOB_READ_WRITE_TOKEN
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Blob Storage token not found. Please Redeploy on Vercel to activate your himalifresh-blob store.',
+        },
+        { status: 500 }
+      );
+    }
 
+    // Fallback: Local filesystem (Local development only)
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadDir, { recursive: true });
 
@@ -72,6 +85,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('File upload error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to upload image' }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error?.message || 'Failed to upload image',
+      },
+      { status: 500 }
+    );
   }
 }
