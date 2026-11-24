@@ -91,7 +91,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       ];
     });
 
-    toast.success(`Added ${product.name} to cart`);
+    toast.success(`Added ${product.name} to cart`, {
+      action: {
+        label: 'View Cart →',
+        onClick: () => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/cart';
+          }
+        },
+      },
+    });
   };
 
   const removeFromCart = (productId: string) => {

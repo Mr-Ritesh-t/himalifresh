@@ -8,7 +8,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <CartProvider>
       {children}
-      <Toaster position="top-right" richColors />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        duration={2500}
+      />
     </CartProvider>
   );
 }
