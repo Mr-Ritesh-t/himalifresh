@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone, Mail, MapPin, MessageSquare, Heart } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageSquare } from 'lucide-react';
 
 interface FooterProps {
   settings?: {
@@ -9,6 +9,7 @@ interface FooterProps {
     phone?: string;
     email?: string;
     address?: string;
+    mapUrl?: string;
     logoUrl?: string;
     whatsappNumber?: string;
   };
@@ -17,8 +18,9 @@ interface FooterProps {
 export function Footer({ settings }: FooterProps) {
   const businessName = settings?.businessName || 'Himali Fresh';
   const phone = settings?.phone || '+91 98320 78728';
-  const email = settings?.email || 'info@himalifresh.com';
+  const email = settings?.email || 'riteshtayade68@gmail.com';
   const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
+  const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
   const whatsapp = settings?.whatsappNumber || '919832078728';
 
@@ -161,7 +163,7 @@ export function Footer({ settings }: FooterProps) {
               <li className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 shrink-0 text-himali-gold mt-1" />
                 <a
-                  href={settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9'}
+                  href={mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white hover:underline transition-colors"
@@ -171,7 +173,7 @@ export function Footer({ settings }: FooterProps) {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 shrink-0 text-himali-gold" />
-                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-white">
+                <a href={`tel:${phone.replace(/[^\d+]/g, '')}`} className="hover:text-white">
                   {phone}
                 </a>
               </li>
