@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { contactSchema } from '@/lib/validations';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { sendContactFormEmails } from '@/lib/brevo';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,6 +40,15 @@ export async function POST(request: NextRequest) {
         message,
       },
     });
+
+    // Send Brevo email notifications (Store Admin Alert + Customer Acknowledgement)
+    sendContactFormEmails({
+      name,
+      email,
+      phone,
+      subject,
+      message,
+    }).catch((err) => console.error('[Brevo Contact Form Error]', err));
 
     return NextResponse.json({
       success: true,

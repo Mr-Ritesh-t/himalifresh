@@ -22,6 +22,7 @@ export default function CheckoutPage() {
 
   const [formData, setFormData] = useState({
     customerName: '',
+    email: '',
     phone: '',
     address: '',
     city: '',
@@ -41,6 +42,7 @@ export default function CheckoutPage() {
             setFormData((prev) => ({
               ...prev,
               customerName: prev.customerName || data.user.name || '',
+              email: prev.email || data.user.email || '',
               phone: prev.phone || data.user.phone || '',
               address: prev.address || data.user.address || '',
               city: prev.city || data.user.city || '',
@@ -81,6 +83,7 @@ export default function CheckoutPage() {
     try {
       const payload = {
         customerName: formData.customerName.trim(),
+        email: formData.email.trim() || undefined,
         phone: formData.phone.trim(),
         address: formData.address.trim(),
         city: formData.city.trim(),
@@ -250,6 +253,20 @@ export default function CheckoutPage() {
                       className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-himali-dark mb-1">
+                    Email Address <span className="text-gray-400 font-normal">(Optional, for order confirmation & receipt)</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="e.g. tenzing@example.com"
+                    className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
+                  />
                 </div>
 
                 <div>

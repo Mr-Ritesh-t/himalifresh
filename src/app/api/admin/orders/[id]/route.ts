@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { sendOrderStatusUpdateEmail } from '@/lib/brevo';
 
 export async function GET(
   request: NextRequest,
@@ -60,7 +61,7 @@ export async function PATCH(
       const order = await tx.order.update({
         where: { id },
         data: { status },
-        include: { items: true, statusHistory: true },
+        include: { items: true, statusHistory: true, user: true },
       });
 
       await tx.orderStatusHistory.create({
@@ -75,6 +76,25 @@ export async function PATCH(
 
       return order;
     });
+
+    // Send Brevo email notification to customer if status changed
+    if (status !== previousStatus) {
+      let customerEmail = updatedOrder.user?.email || null;
+      if (!customerEmail && updatedOrder.instructions) {
+        const match = updatedOrder.instructions.match(/\[Email:\s*([^\]]+)\]/);
+        if (match) customerEmail = match[1].trim();
+      }
+
+      if (customerEmail) {
+        sendOrderStatusUpdateEmail({
+          orderNumber: updatedOrder.orderNumber,
+          customerName: updatedOrder.customerName,
+          customerEmail,
+          newStatus: status,
+          notes,
+        }).catch((err) => console.error('[Brevo Status Update Error]', err));
+      }
+    }
 
     return NextResponse.json({ success: true, order: updatedOrder });
   } catch (error: any) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, createUserToken, USER_TOKEN_COOKIE_NAME } from '@/lib/auth';
+import { sendWelcomeEmail } from '@/lib/brevo';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,6 +56,12 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       },
     });
+
+    // Send Brevo welcome email to new user
+    sendWelcomeEmail({
+      name: user.name,
+      email: user.email,
+    }).catch((err) => console.error('[Brevo Welcome Email Error]', err));
 
     const token = await createUserToken({
       id: user.id,

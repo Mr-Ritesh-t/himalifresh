@@ -5,6 +5,7 @@ import { generateOrderNumber } from '@/lib/utils';
 import { buildWhatsAppOrderMessage, generateWhatsAppUrl } from '@/lib/whatsapp';
 import { getUserSession } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { sendOrderConfirmationEmail, sendAdminNewOrderAlert } from '@/lib/brevo';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     const {
       customerName,
+      email,
       phone,
       address,
       city,
@@ -114,7 +116,9 @@ export async function POST(request: NextRequest) {
           city,
           pincode,
           landmark,
-          instructions,
+          instructions: instructions
+            ? (email && !userSession ? `[Email: ${email}] ${instructions}` : instructions)
+            : (email && !userSession ? `[Email: ${email}]` : null),
           totalAmount: calculatedTotal,
           status: 'NEW',
           items: {
@@ -137,7 +141,38 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
-    // 6. Fetch business settings to get the official WhatsApp number
+    // 6. Trigger Brevo Transactional Email Notifications
+    const customerEmail = email || userSession?.email || null;
+    Promise.allSettled([
+      // Admin alert email
+      sendAdminNewOrderAlert({
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail,
+        phone: order.phone,
+        address: order.address,
+        city: order.city,
+        pincode: order.pincode,
+        totalAmount: order.totalAmount,
+        items: order.items,
+      }),
+      // Customer confirmation email (if email is available)
+      customerEmail
+        ? sendOrderConfirmationEmail({
+            orderNumber: order.orderNumber,
+            customerName: order.customerName,
+            customerEmail,
+            phone: order.phone,
+            address: order.address,
+            city: order.city,
+            pincode: order.pincode,
+            totalAmount: order.totalAmount,
+            items: order.items,
+          })
+        : Promise.resolve(),
+    ]).catch((err) => console.error('[Brevo Dispatch Error]', err));
+
+    // 7. Fetch business settings to get the official WhatsApp number
     const settings = await prisma.businessSettings.findUnique({
       where: { id: 'default-settings' },
     });

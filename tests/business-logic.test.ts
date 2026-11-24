@@ -195,3 +195,57 @@ describe('4. Authentication & Security Layer', () => {
     expect(verified).toBeNull();
   });
 });
+
+describe('5. Brevo Email Integration & Checkout Email Validation', () => {
+  it('accepts valid email and optional null/empty email in checkoutSchema', () => {
+    const withEmail = {
+      customerName: 'Sunita Pradhan',
+      email: 'sunita@example.com',
+      phone: '9832012345',
+      address: 'House 45, Pradhan Nagar',
+      city: 'Siliguri',
+      pincode: '734001',
+      items: [{ productId: 'prod-123', quantity: 2 }],
+    };
+    expect(checkoutSchema.safeParse(withEmail).success).toBe(true);
+
+    const withEmptyEmail = { ...withEmail, email: '' };
+    expect(checkoutSchema.safeParse(withEmptyEmail).success).toBe(true);
+
+    const withoutEmail = { ...withEmail, email: undefined };
+    expect(checkoutSchema.safeParse(withoutEmail).success).toBe(true);
+  });
+
+  it('rejects invalid email formats in checkoutSchema', () => {
+    const invalidEmail = {
+      customerName: 'Sunita Pradhan',
+      email: 'not-an-email',
+      phone: '9832012345',
+      address: 'House 45, Pradhan Nagar',
+      city: 'Siliguri',
+      pincode: '734001',
+      items: [{ productId: 'prod-123', quantity: 2 }],
+    };
+    const res = checkoutSchema.safeParse(invalidEmail);
+    expect(res.success).toBe(false);
+  });
+
+  it('handles missing BREVO_API_KEY gracefully without throwing errors', async () => {
+    const { sendBrevoEmail } = await import('@/lib/brevo');
+    const prevKey = process.env.BREVO_API_KEY;
+    delete process.env.BREVO_API_KEY;
+
+    const res = await sendBrevoEmail({
+      to: [{ email: 'test@example.com' }],
+      subject: 'Test Subject',
+      htmlContent: '<p>Test</p>',
+    });
+
+    expect(res.success).toBe(false);
+    expect(res.skipped).toBe(true);
+
+    if (prevKey) {
+      process.env.BREVO_API_KEY = prevKey;
+    }
+  });
+});
