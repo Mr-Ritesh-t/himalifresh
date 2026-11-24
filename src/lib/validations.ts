@@ -18,7 +18,7 @@ export const checkoutSchema = z.object({
 
 export const productSchema = z.object({
   name: z.string().min(2, 'Product name is required'),
-  slug: z.string().min(2, 'Slug is required'),
+  slug: z.string().optional(),
   description: z.string().min(5, 'Description is required'),
   price: z.number().positive('Price must be greater than zero'),
   weight: z.string().min(1, 'Weight / Unit is required'),
@@ -32,7 +32,7 @@ export const productSchema = z.object({
 
 export const categorySchema = z.object({
   name: z.string().min(2, 'Category name is required'),
-  slug: z.string().min(2, 'Slug is required'),
+  slug: z.string().optional(),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   displayOrder: z.number().int().default(0),

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categorySchema } from '@/lib/validations';
+import { slugify } from '@/lib/utils';
 
 export async function GET() {
   const session = await getAdminSession();
@@ -44,22 +45,27 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
 
-    // Check slug uniqueness
-    const existing = await prisma.category.findUnique({
-      where: { slug: data.slug },
-    });
+    // Automatically generate unique slug based on category name and number
+    const baseSlug = slugify(data.slug || data.name || 'category');
+    let finalSlug = baseSlug;
+    let counter = 1;
 
-    if (existing) {
-      return NextResponse.json(
-        { success: false, error: 'A category with this slug already exists' },
-        { status: 400 }
-      );
+    while (true) {
+      const existing = await prisma.category.findUnique({
+        where: { slug: finalSlug },
+        select: { id: true },
+      });
+
+      if (!existing) break;
+
+      finalSlug = `${baseSlug}-${counter}`;
+      counter++;
     }
 
     const category = await prisma.category.create({
       data: {
         name: data.name,
-        slug: data.slug,
+        slug: finalSlug,
         description: data.description,
         imageUrl: data.imageUrl,
         displayOrder: data.displayOrder,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { productSchema } from '@/lib/validations';
+import { slugify } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
@@ -46,6 +47,27 @@ export async function PATCH(
     const body = await request.json();
 
     const { galleryImages, ...updateData } = body;
+
+    // Automatically manage slug if name is updated or slug provided
+    if (updateData.name || updateData.slug) {
+      const baseSlug = slugify(updateData.slug || updateData.name);
+      let finalSlug = baseSlug;
+      let counter = 1;
+
+      while (true) {
+        const existing = await prisma.product.findUnique({
+          where: { slug: finalSlug },
+          select: { id: true },
+        });
+
+        if (!existing || existing.id === id) break;
+
+        finalSlug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+
+      updateData.slug = finalSlug;
+    }
 
     const product = await prisma.$transaction(async (tx) => {
       await tx.product.update({

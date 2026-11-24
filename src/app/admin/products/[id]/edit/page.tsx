@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Upload, AlertCircle, X, Plus, Camera } from 'lucide-react';
+import { slugify } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function AdminEditProductPage() {
@@ -224,22 +225,17 @@ export default function AdminEditProductPage() {
               type="text"
               required
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setForm({ ...form, name: val, slug: slugify(val) });
+              }}
               className="w-full rounded-xl border border-slate-300 p-2.5 text-xs sm:text-sm focus:border-himali-primary focus:outline-none"
             />
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              URL Slug *
-            </label>
-            <input
-              type="text"
-              required
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              className="w-full rounded-xl border border-slate-300 p-2.5 text-xs sm:text-sm font-mono text-slate-600 focus:border-himali-primary focus:outline-none"
-            />
+            {form.slug && (
+              <p className="text-[11px] text-slate-400 mt-1 font-mono">
+                Web Link: /product/{form.slug} (automatic)
+              </p>
+            )}
           </div>
 
           <div>

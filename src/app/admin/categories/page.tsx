@@ -106,8 +106,8 @@ export default function AdminCategoriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.slug) {
-      toast.error('Name and slug are required');
+    if (!form.name) {
+      toast.error('Category name is required');
       return;
     }
 
@@ -347,17 +347,11 @@ export default function AdminCategoriesPage() {
                   onChange={handleNameChange}
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-xs focus:border-himali-primary focus:outline-none"
                 />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Slug *</label>
-                <input
-                  type="text"
-                  required
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-mono focus:border-himali-primary focus:outline-none"
-                />
+                {form.slug && (
+                  <p className="text-[11px] text-slate-400 mt-1 font-mono">
+                    URL link: /shop/{form.slug} (automatic)
+                  </p>
+                )}
               </div>
 
               <div>

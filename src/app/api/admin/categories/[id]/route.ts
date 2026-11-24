@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { slugify } from '@/lib/utils';
 
 export async function PATCH(
   request: NextRequest,
@@ -14,6 +15,26 @@ export async function PATCH(
   try {
     const { id } = await context.params;
     const body = await request.json();
+
+    if (body.name || body.slug) {
+      const baseSlug = slugify(body.slug || body.name);
+      let finalSlug = baseSlug;
+      let counter = 1;
+
+      while (true) {
+        const existing = await prisma.category.findUnique({
+          where: { slug: finalSlug },
+          select: { id: true },
+        });
+
+        if (!existing || existing.id === id) break;
+
+        finalSlug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+
+      body.slug = finalSlug;
+    }
 
     const category = await prisma.category.update({
       where: { id },

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { productSchema } from '@/lib/validations';
+import { slugify } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const session = await getAdminSession();
@@ -59,16 +60,21 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
 
-    // Check slug uniqueness
-    const existing = await prisma.product.findUnique({
-      where: { slug: data.slug },
-    });
+    // Automatically generate unique slug based on product name and number
+    const baseSlug = slugify(data.slug || data.name || 'product');
+    let finalSlug = baseSlug;
+    let counter = 1;
 
-    if (existing) {
-      return NextResponse.json(
-        { success: false, error: 'A product with this slug already exists' },
-        { status: 400 }
-      );
+    while (true) {
+      const existing = await prisma.product.findUnique({
+        where: { slug: finalSlug },
+        select: { id: true },
+      });
+
+      if (!existing) break;
+
+      finalSlug = `${baseSlug}-${counter}`;
+      counter++;
     }
 
     const { galleryImages, ...productFields } = data;
@@ -76,7 +82,7 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name: productFields.name,
-        slug: productFields.slug,
+        slug: finalSlug,
         description: productFields.description,
         price: productFields.price,
         weight: productFields.weight,

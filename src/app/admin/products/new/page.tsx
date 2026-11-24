@@ -131,7 +131,7 @@ export default function AdminNewProductPage() {
     e.preventDefault();
     setError(null);
 
-    if (!form.name || !form.slug || !form.price || !form.weight || !form.categoryId) {
+    if (!form.name || !form.price || !form.weight || !form.categoryId) {
       toast.error('Please complete all required fields');
       return;
     }
@@ -208,20 +208,11 @@ export default function AdminNewProductPage() {
               placeholder="e.g. Organic Black Cardamom"
               className="w-full rounded-xl border border-slate-300 p-2.5 text-xs sm:text-sm focus:border-himali-primary focus:outline-none"
             />
-          </div>
-
-          {/* Slug */}
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              URL Slug *
-            </label>
-            <input
-              type="text"
-              required
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              className="w-full rounded-xl border border-slate-300 p-2.5 text-xs sm:text-sm font-mono text-slate-600 focus:border-himali-primary focus:outline-none"
-            />
+            {form.slug && (
+              <p className="text-[11px] text-slate-400 mt-1 font-mono">
+                Web Link: /product/{form.slug} (automatic)
+              </p>
+            )}
           </div>
 
           {/* Category */}
