@@ -685,21 +685,12 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Modal Footer Actions */}
-                <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => setShowConfirmModal(false)}
-                    className="w-full sm:w-auto sm:flex-1 py-3 px-4 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
-                  >
-                    <X className="h-4 w-4" />
-                    <span>Cancel / Close</span>
-                  </button>
+                <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200">
                   <button
                     type="button"
                     disabled={loading}
                     onClick={handleConfirmAndPlaceOrder}
-                    className="w-full sm:flex-2 flex items-center justify-center gap-2 rounded-xl bg-[#064B32] py-3 px-6 text-xs sm:text-sm font-bold text-white shadow hover:bg-[#043322] transition-colors disabled:opacity-60"
+                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#064B32] py-3.5 px-6 text-sm font-bold text-white shadow hover:bg-[#043322] transition-all disabled:opacity-60"
                   >
                     {loading ? (
                       <>
