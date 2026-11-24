@@ -143,8 +143,20 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (formData.pincode.trim().length !== 6 || !/^\d{6}$/.test(formData.pincode.trim())) {
+    const cleanPhone = formData.phone.replace(/[\s()-]/g, '');
+    if (cleanPhone.length < 10) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    const cleanPin = formData.pincode.replace(/\D/g, '');
+    if (cleanPin.length !== 6) {
       toast.error('Please enter a valid 6-digit Indian PIN code');
+      return;
+    }
+
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      toast.error('Please enter a valid email address or leave it blank');
       return;
     }
 
@@ -158,11 +170,11 @@ export default function CheckoutPage() {
     try {
       const payload = {
         customerName: formData.customerName.trim(),
-        email: formData.email.trim() || undefined,
-        phone: formData.phone.trim(),
+        email: formData.email.trim() || null,
+        phone: formData.phone.trim().replace(/[\s()-]/g, ''),
         address: formData.address.trim(),
         city: formData.city.trim(),
-        pincode: formData.pincode.trim(),
+        pincode: formData.pincode.trim().replace(/\D/g, ''),
         landmark: formData.landmark.trim() || null,
         instructions: formData.instructions.trim() || null,
         items: items.map((i) => ({
@@ -180,8 +192,14 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setError(data.error || 'Failed to submit order. Please try again.');
-        toast.error(data.error || 'Failed to submit order');
+        let detailedError = data.error || 'Failed to submit order. Please try again.';
+        if (data.issues) {
+          const firstField = Object.keys(data.issues)[0];
+          const firstErr = data.issues[firstField]?.[0];
+          if (firstErr) detailedError = firstErr;
+        }
+        setError(detailedError);
+        toast.error(detailedError);
         setLoading(false);
         setShowConfirmModal(false);
         return;

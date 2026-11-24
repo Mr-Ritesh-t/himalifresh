@@ -18,16 +18,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input before validation to handle mobile auto-fill and spacing quirks
+    const body = {
+      ...rawBody,
+      customerName: typeof rawBody.customerName === 'string' ? rawBody.customerName.trim() : rawBody.customerName,
+      phone: typeof rawBody.phone === 'string' ? rawBody.phone.trim().replace(/[\s()-]/g, '') : rawBody.phone,
+      pincode: typeof rawBody.pincode === 'string' ? rawBody.pincode.trim().replace(/\D/g, '') : rawBody.pincode,
+      address: typeof rawBody.address === 'string' ? rawBody.address.trim() : rawBody.address,
+      city: typeof rawBody.city === 'string' ? rawBody.city.trim() : rawBody.city,
+      email: typeof rawBody.email === 'string' && rawBody.email.trim() ? rawBody.email.trim().toLowerCase() : null,
+      landmark: typeof rawBody.landmark === 'string' && rawBody.landmark.trim() ? rawBody.landmark.trim() : null,
+      instructions: typeof rawBody.instructions === 'string' && rawBody.instructions.trim() ? rawBody.instructions.trim() : null,
+    };
 
     // 1. Validate request body with Zod
     const validationResult = checkoutSchema.safeParse(body);
     if (!validationResult.success) {
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
+      const firstErrorMessage = Object.values(fieldErrors).flat()[0] || 'Validation failed';
       return NextResponse.json(
         {
           success: false,
-          error: 'Validation failed',
-          issues: validationResult.error.flatten().fieldErrors,
+          error: firstErrorMessage,
+          issues: fieldErrors,
         },
         { status: 400 }
       );
