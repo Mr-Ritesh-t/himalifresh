@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/Providers';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -68,6 +69,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="min-h-screen flex flex-col justify-between selection:bg-himali-gold selection:text-himali-dark">
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
