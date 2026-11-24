@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/utils';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
-import { MessageSquare, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, UserCheck } from 'lucide-react';
+import { MessageSquare, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, UserCheck, MapPin, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
@@ -19,6 +19,15 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [pincodeChecking, setPincodeChecking] = useState(false);
+  const [pincodeResult, setPincodeResult] = useState<{
+    valid: boolean;
+    city?: string;
+    state?: string;
+    deliveryType?: string;
+    estimatedDays?: string;
+    error?: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -57,11 +66,60 @@ export default function CheckoutPage() {
     fetchMe();
   }, []);
 
+  const verifyPincodeInput = async (code: string) => {
+    const clean = code.trim();
+    if (clean.length !== 6 || !/^\d{6}$/.test(clean)) {
+      setPincodeResult(null);
+      return;
+    }
+
+    try {
+      setPincodeChecking(true);
+      const res = await fetch(`/api/pincode/${clean}`);
+      const data = await res.json();
+      if (data.valid && data.deliverable) {
+        setPincodeResult({
+          valid: true,
+          city: data.city,
+          state: data.state,
+          deliveryType: data.deliveryType,
+          estimatedDays: data.estimatedDays,
+        });
+        // Auto-fill city if empty or if user desires
+        if (data.city) {
+          setFormData((prev) => ({
+            ...prev,
+            city: prev.city.trim() ? prev.city : data.city,
+          }));
+        }
+      } else {
+        setPincodeResult({
+          valid: false,
+          error: data.error || 'Invalid PIN code. Please enter a valid Indian postal PIN code.',
+        });
+      }
+    } catch {
+      // Non-blocking
+    } finally {
+      setPincodeChecking(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    if (name === 'pincode') {
+      const clean = value.replace(/\D/g, '').slice(0, 6);
+      if (clean.length === 6) {
+        verifyPincodeInput(clean);
+      } else {
+        setPincodeResult(null);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -304,16 +362,53 @@ export default function CheckoutPage() {
                     <label className="block text-xs font-semibold text-himali-dark mb-1">
                       PIN Code *
                     </label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      required
-                      maxLength={6}
-                      value={formData.pincode}
-                      onChange={handleChange}
-                      placeholder="e.g. 734003"
-                      className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="pincode"
+                        required
+                        maxLength={6}
+                        value={formData.pincode}
+                        onChange={handleChange}
+                        onBlur={() => {
+                          if (formData.pincode.length === 6) {
+                            verifyPincodeInput(formData.pincode);
+                          }
+                        }}
+                        placeholder="e.g. 734003"
+                        className={`w-full rounded-xl border p-3 text-sm focus:outline-none transition-colors ${
+                          pincodeResult?.valid === true
+                            ? 'border-emerald-500 bg-emerald-50/20'
+                            : pincodeResult?.valid === false
+                            ? 'border-rose-400 bg-rose-50/20'
+                            : 'border-himali-border focus:border-himali-primary'
+                        }`}
+                      />
+                      {pincodeChecking && (
+                        <div className="absolute right-3 top-3.5">
+                          <Loader2 className="h-4 w-4 animate-spin text-himali-primary" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* PIN Code Verification Indicator */}
+                    {pincodeResult && (
+                      <div className="mt-1.5">
+                        {pincodeResult.valid ? (
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                            <span>
+                              Deliverable to {pincodeResult.city || pincodeResult.state} ({pincodeResult.estimatedDays})
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-rose-600">
+                            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                            <span>{pincodeResult.error || 'Invalid 6-digit PIN code'}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div>

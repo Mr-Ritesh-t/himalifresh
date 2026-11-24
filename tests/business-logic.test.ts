@@ -249,3 +249,36 @@ describe('5. Brevo Email Integration & Checkout Email Validation', () => {
     }
   });
 });
+
+describe('6. Indian Postal PIN Code Verification & Deliverability', () => {
+  it('validates 6-digit Indian PIN codes and flags local Himalayan express delivery', async () => {
+    const { verifyPincode } = await import('@/lib/pincode');
+
+    // Local Siliguri PIN
+    const local = await verifyPincode('734003');
+    expect(local.valid).toBe(true);
+    expect(local.deliverable).toBe(true);
+    expect(local.deliveryType).toContain('Himalayan Express');
+
+    // Pan-India Metro (Delhi) PIN
+    const delhi = await verifyPincode('110001');
+    expect(delhi.valid).toBe(true);
+    expect(delhi.deliverable).toBe(true);
+  });
+
+  it('rejects invalid PIN code lengths and formats', async () => {
+    const { verifyPincode } = await import('@/lib/pincode');
+
+    const short = await verifyPincode('7340');
+    expect(short.valid).toBe(false);
+    expect(short.deliverable).toBe(false);
+
+    const startsWithZero = await verifyPincode('012345');
+    expect(startsWithZero.valid).toBe(false);
+    expect(startsWithZero.deliverable).toBe(false);
+
+    const alpha = await verifyPincode('73400A');
+    expect(alpha.valid).toBe(false);
+    expect(alpha.deliverable).toBe(false);
+  });
+});

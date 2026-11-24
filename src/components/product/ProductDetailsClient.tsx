@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
@@ -15,6 +15,10 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  MapPin,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
 
 interface ProductDetailsClientProps {
@@ -26,6 +30,73 @@ export function ProductDetailsClient({ product, whatsappNumber }: ProductDetails
   const { addToCart, items } = useCart();
   const [quantity, setQuantity] = useState(1);
   const existingInCart = items.find((i) => i.id === product.id);
+
+  // Delivery Pincode Checker State
+  const [pincodeInput, setPincodeInput] = useState('');
+  const [pincodeChecking, setPincodeChecking] = useState(false);
+  const [pincodeStatus, setPincodeStatus] = useState<{
+    valid: boolean;
+    city?: string;
+    state?: string;
+    estimatedDays?: string;
+    deliveryType?: string;
+    error?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('himali_pincode');
+      if (saved && saved.length === 6) {
+        setPincodeInput(saved);
+        handleCheckPincode(saved, false);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
+
+  const handleCheckPincode = async (codeToCheck?: string, save = true) => {
+    const code = (codeToCheck || pincodeInput).trim().replace(/\D/g, '').slice(0, 6);
+    if (code.length !== 6) {
+      setPincodeStatus({
+        valid: false,
+        error: 'Please enter a valid 6-digit Indian PIN code',
+      });
+      return;
+    }
+
+    try {
+      setPincodeChecking(true);
+      const res = await fetch(`/api/pincode/${code}`);
+      const data = await res.json();
+      if (data.valid && data.deliverable) {
+        setPincodeStatus({
+          valid: true,
+          city: data.city,
+          state: data.state,
+          estimatedDays: data.estimatedDays,
+          deliveryType: data.deliveryType,
+        });
+        if (save) {
+          try {
+            localStorage.setItem('himali_pincode', code);
+          } catch {}
+        }
+      } else {
+        setPincodeStatus({
+          valid: false,
+          error: data.error || 'PIN code is currently non-serviceable.',
+        });
+      }
+    } catch {
+      setPincodeStatus({
+        valid: false,
+        error: 'Unable to verify PIN code. Please try again.',
+      });
+    } finally {
+      setPincodeChecking(false);
+    }
+  };
 
   const allImages = useMemo(() => {
     const list: string[] = [];
@@ -255,6 +326,74 @@ export function ProductDetailsClient({ product, whatsappNumber }: ProductDetails
             </a>
           </div>
         )}
+
+        {/* Delivery Availability Checker */}
+        <div className="mt-6 rounded-2xl border border-himali-border/80 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-himali-dark">
+            <Truck className="h-4 w-4 text-himali-green" />
+            <span>Delivery Availability & PIN Code Check</span>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCheckPincode();
+            }}
+            className="flex items-center gap-2 mt-2"
+          >
+            <div className="relative flex-1">
+              <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                maxLength={6}
+                value={pincodeInput}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                  setPincodeInput(val);
+                  if (val.length === 6) {
+                    handleCheckPincode(val);
+                  } else {
+                    setPincodeStatus(null);
+                  }
+                }}
+                placeholder="Enter 6-digit PIN code (e.g. 734001)"
+                className="w-full rounded-xl border border-himali-border py-2 pl-9 pr-3 text-xs sm:text-sm focus:border-himali-primary focus:outline-none"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={pincodeChecking || pincodeInput.length !== 6}
+              className="rounded-xl bg-himali-primary px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow hover:bg-himali-dark transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {pincodeChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+              <span>{pincodeChecking ? 'Checking...' : 'Check'}</span>
+            </button>
+          </form>
+
+          {/* Verification Status */}
+          {pincodeStatus && (
+            <div className="mt-3 pt-3 border-t border-slate-100">
+              {pincodeStatus.valid ? (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <span>
+                      Delivery Available to {pincodeStatus.city || pincodeStatus.state}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 pl-5">
+                    Estimated Delivery: <strong>{pincodeStatus.estimatedDays}</strong> ({pincodeStatus.deliveryType})
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-xs text-rose-600">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{pincodeStatus.error}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Trust Points */}
         <div className="mt-8 grid grid-cols-2 gap-3 pt-6 border-t border-himali-border/60">
