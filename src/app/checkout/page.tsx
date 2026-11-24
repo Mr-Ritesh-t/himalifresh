@@ -67,6 +67,17 @@ export default function CheckoutPage() {
     fetchMe();
   }, []);
 
+  // Escape key to dismiss confirmation modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showConfirmModal) {
+        setShowConfirmModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showConfirmModal]);
+
   const verifyPincodeInput = async (code: string) => {
     const clean = code.trim();
     if (clean.length !== 6 || !/^\d{6}$/.test(clean)) {
@@ -559,9 +570,12 @@ export default function CheckoutPage() {
 
           {/* ── Order Confirmation Modal ── */}
           {showConfirmModal && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+              onClick={() => setShowConfirmModal(false)}
+            >
               <div
-                className="max-w-lg w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-himali-border animate-in zoom-in-95 duration-200"
+                className="max-w-lg w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-himali-border animate-in zoom-in-95 duration-200 relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header */}
@@ -569,7 +583,8 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmModal(false)}
-                    className="absolute right-4 top-4 text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+                    aria-label="Close dialog"
+                    className="absolute right-3.5 top-3.5 flex h-9 w-9 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-all shadow-sm active:scale-95"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -675,9 +690,10 @@ export default function CheckoutPage() {
                     type="button"
                     disabled={loading}
                     onClick={() => setShowConfirmModal(false)}
-                    className="w-full sm:w-auto sm:flex-1 py-3 px-4 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
+                    className="w-full sm:w-auto sm:flex-1 py-3 px-4 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
-                    Go Back & Edit
+                    <X className="h-4 w-4" />
+                    <span>Cancel / Close</span>
                   </button>
                   <button
                     type="button"
