@@ -30,7 +30,7 @@ export async function sendBrevoEmail({
     return { success: false, skipped: true, error: 'BREVO_API_KEY is not configured' };
   }
 
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'info@himalifresh.com';
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
   const senderName = process.env.BREVO_SENDER_NAME || 'Himali Fresh';
 
   try {
@@ -250,7 +250,7 @@ export async function sendAdminNewOrderAlert(params: {
     subtotal: number;
   }>;
 }) {
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'info@himalifresh.com';
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
 
   const { orderNumber, customerName, customerEmail, phone, address, city, pincode, totalAmount, items } = params;
@@ -384,7 +384,7 @@ export async function sendContactFormEmails(params: {
   message: string;
 }) {
   const { name, email, phone, subject, message } = params;
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'info@himalifresh.com';
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
 
   // Email to Admin
   const adminHtml = `
