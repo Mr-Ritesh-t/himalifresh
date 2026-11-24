@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -17,8 +17,10 @@ import {
   LayoutGrid,
   Info,
   PhoneCall,
+  Loader2,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 interface HeaderProps {
   settings?: {
@@ -35,16 +37,77 @@ export function Header({ settings }: HeaderProps) {
   const { totalCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [totalSearchMatches, setTotalSearchMatches] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const desktopSearchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   const phone = settings?.phone || '+91 98320 78728';
-  const email = settings?.email || 'info@himalifresh.com';
+  const email = settings?.email || 'riteshtayade68@gmail.com';
   const announcement = settings?.announcement || 'Delivering Authentic Himalayan Products';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
+
+  // Live search debounce
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      setSearchResults([]);
+      setTotalSearchMatches(0);
+      setIsSearching(false);
+      setShowDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    setShowDropdown(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/products?q=${encodeURIComponent(q)}&limit=4`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.products || []);
+          setTotalSearchMatches(data.totalCount || 0);
+        }
+      } catch {
+        // Fallback silently
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Click outside to dismiss autocomplete dropdown
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        desktopSearchRef.current &&
+        !desktopSearchRef.current.contains(e.target as Node) &&
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(e.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setShowDropdown(false);
+  }, [pathname]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowDropdown(false);
       setMobileMenuOpen(false);
     }
   };
@@ -153,20 +216,118 @@ export function Header({ settings }: HeaderProps) {
               })}
             </nav>
 
-            {/* Desktop Search */}
-            <form
-              onSubmit={handleSearchSubmit}
-              className="hidden lg:flex items-center relative flex-1 max-w-[260px]"
-            >
-              <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search for products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm text-gray-700 placeholder-gray-400 focus:border-[#064B32] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#064B32]/30"
-              />
-            </form>
+            {/* Desktop Search with Live Autocomplete Dropdown */}
+            <div ref={desktopSearchRef} className="hidden lg:block relative flex-1 max-w-[280px]">
+              <form onSubmit={handleSearchSubmit} className="relative w-full">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onFocus={() => {
+                    if (searchQuery.trim().length >= 2) setShowDropdown(true);
+                  }}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-8 text-sm text-gray-700 placeholder-gray-400 focus:border-[#064B32] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#064B32]/30"
+                />
+                {isSearching ? (
+                  <Loader2 className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-gray-400" />
+                ) : searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setShowDropdown(false);
+                    }}
+                    className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 p-0.5"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                ) : null}
+              </form>
+
+              {/* Autocomplete Dropdown */}
+              {showDropdown && searchQuery.trim().length >= 2 && (
+                <div className="absolute top-full right-0 w-[360px] mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-gray-200/90 overflow-hidden animate-in fade-in duration-150">
+                  {isSearching && searchResults.length === 0 ? (
+                    <div className="p-5 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-[#064B32]" />
+                      <span>Searching Himalayan catalog...</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div>
+                      <div className="px-3.5 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                        <span>Top Results</span>
+                        <span className="text-[#064B32] lowercase font-medium">{totalSearchMatches} found</span>
+                      </div>
+                      <div className="divide-y divide-gray-100 max-h-[340px] overflow-y-auto">
+                        {searchResults.map((prod) => (
+                          <Link
+                            key={prod.id}
+                            href={`/product/${prod.slug}`}
+                            onClick={() => {
+                              setShowDropdown(false);
+                              setSearchQuery('');
+                            }}
+                            className="flex items-center gap-3 p-3 hover:bg-emerald-50/50 transition-colors group"
+                          >
+                            <div className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-200/60">
+                              <Image
+                                src={prod.mainImageUrl || '/images/hero-banner.jpg'}
+                                alt={prod.name}
+                                fill
+                                sizes="48px"
+                                className="object-cover group-hover:scale-105 transition-transform"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-semibold text-gray-900 group-hover:text-[#064B32] truncate transition-colors">
+                                {prod.name}
+                              </div>
+                              <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-gray-500">
+                                {prod.category && <span>{prod.category.name}</span>}
+                                {prod.category && <span>•</span>}
+                                <span>{prod.weight}</span>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <div className="text-xs font-bold text-[#064B32]">
+                                {formatPrice(prod.price)}
+                              </div>
+                              {prod.isAvailable ? (
+                                <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                                  In Stock
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-medium text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-full">
+                                  Sold Out
+                                </span>
+                              )}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                      <Link
+                        href={`/shop?q=${encodeURIComponent(searchQuery.trim())}`}
+                        onClick={() => setShowDropdown(false)}
+                        className="block w-full py-2.5 px-4 text-center text-xs font-semibold text-[#064B32] hover:bg-emerald-50 transition-colors border-t border-gray-100 bg-gray-50/80"
+                      >
+                        View all {totalSearchMatches} results for &ldquo;{searchQuery}&rdquo; →
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="p-5 text-center">
+                      <p className="text-xs font-semibold text-gray-700">
+                        No products found for &ldquo;{searchQuery}&rdquo;
+                      </p>
+                      <p className="text-[11px] text-gray-400 mt-1">
+                        Try searching for honey, pickle, tea, or spices.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Right Icons */}
             <div className="flex items-center gap-1">
@@ -211,16 +372,99 @@ export function Header({ settings }: HeaderProps) {
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <form onSubmit={handleSearchSubmit} className="mb-6 relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-4 text-sm focus:border-[#064B32] focus:bg-white focus:outline-none"
-                />
-              </form>
+              <div ref={mobileSearchRef} className="mb-6 relative">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onFocus={() => {
+                      if (searchQuery.trim().length >= 2) setShowDropdown(true);
+                    }}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-8 text-sm focus:border-[#064B32] focus:bg-white focus:outline-none"
+                  />
+                  {isSearching ? (
+                    <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-gray-400" />
+                  ) : searchQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setShowDropdown(false);
+                      }}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : null}
+                </form>
+
+                {/* Mobile Autocomplete Dropdown */}
+                {showDropdown && searchQuery.trim().length >= 2 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                    {isSearching && searchResults.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-[#064B32]" />
+                        <span>Searching...</span>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div>
+                        <div className="divide-y divide-gray-100 max-h-[260px] overflow-y-auto">
+                          {searchResults.map((prod) => (
+                            <Link
+                              key={prod.id}
+                              href={`/product/${prod.slug}`}
+                              onClick={() => {
+                                setShowDropdown(false);
+                                setSearchQuery('');
+                                setMobileMenuOpen(false);
+                              }}
+                              className="flex items-center gap-2.5 p-2.5 hover:bg-emerald-50/50 transition-colors"
+                            >
+                              <div className="relative h-10 w-10 shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-200/60">
+                                <Image
+                                  src={prod.mainImageUrl || '/images/hero-banner.jpg'}
+                                  alt={prod.name}
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs font-semibold text-gray-900 truncate">
+                                  {prod.name}
+                                </div>
+                                <div className="text-[11px] text-gray-500">
+                                  {prod.weight}
+                                </div>
+                              </div>
+                              <div className="text-xs font-bold text-[#064B32] shrink-0">
+                                {formatPrice(prod.price)}
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                        <Link
+                          href={`/shop?q=${encodeURIComponent(searchQuery.trim())}`}
+                          onClick={() => {
+                            setShowDropdown(false);
+                            setMobileMenuOpen(false);
+                          }}
+                          className="block w-full py-2 px-3 text-center text-xs font-semibold text-[#064B32] hover:bg-emerald-50 transition-colors border-t border-gray-100 bg-gray-50"
+                        >
+                          View all {totalSearchMatches} results →
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-xs text-gray-500">
+                        No products found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="flex flex-col gap-1">
                 {[
                   { href: '/', label: 'Home', icon: Home },
