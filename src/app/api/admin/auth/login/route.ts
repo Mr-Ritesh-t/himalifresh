@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword, createAdminToken, TOKEN_COOKIE_NAME } from '@/lib/auth';
 import { loginSchema } from '@/lib/validations';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`admin-login:${ip}`, 5, 5 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      const waitMinutes = Math.ceil(rateCheck.resetInMs / 60000);
+      return NextResponse.json(
+        { success: false, error: `Too many login attempts. Please wait ${waitMinutes} minute(s) before trying again.` },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const result = loginSchema.safeParse(body);
 

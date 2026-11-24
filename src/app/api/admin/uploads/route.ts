@@ -18,14 +18,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No file provided' }, { status: 400 });
     }
 
-    // Validate image type (supports standard formats, mobile camera JPEG, PNG, WEBP, and HEIC)
-    const isImage =
-      (file.type && file.type.startsWith('image/')) ||
-      /\.(jpe?g|png|webp|svg|heic|heif)$/i.test(file.name);
-
-    if (!isImage) {
+    // Prevent SVG uploads for security (SVGs can embed executable JavaScript / XSS)
+    if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
       return NextResponse.json(
-        { success: false, error: 'Invalid file type. Please upload an image file (JPEG, PNG, WEBP).' },
+        { success: false, error: 'SVG images are not permitted for security. Please upload JPG, PNG, or WEBP.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate safe raster image formats (JPEG, PNG, WEBP, and HEIC)
+    const isImage = file.type && file.type.startsWith('image/');
+    const hasSafeExtension = /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+
+    if (!isImage || !hasSafeExtension) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid file type. Only JPEG, PNG, WEBP, and HEIC images are allowed.' },
         { status: 400 }
       );
     }
@@ -43,7 +50,6 @@ export async function POST(request: NextRequest) {
     if (!ext || ext === '.') {
       if (file.type?.includes('png')) ext = '.png';
       else if (file.type?.includes('webp')) ext = '.webp';
-      else if (file.type?.includes('svg')) ext = '.svg';
       else ext = '.jpg';
     }
     const cleanBaseName = path.basename(file.name, ext).replace(/[^\w-]/g, '') || 'photo';

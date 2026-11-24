@@ -4,9 +4,19 @@ import { checkoutSchema } from '@/lib/validations';
 import { generateOrderNumber } from '@/lib/utils';
 import { buildWhatsAppOrderMessage, generateWhatsAppUrl } from '@/lib/whatsapp';
 import { getUserSession } from '@/lib/auth';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`order-create:${ip}`, 10, 10 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'You are placing orders too quickly. Please wait a few minutes before trying again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
 
     // 1. Validate request body with Zod

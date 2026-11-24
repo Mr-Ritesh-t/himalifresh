@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { contactSchema } from '@/lib/validations';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`contact:${ip}`, 5, 10 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many messages sent. Please wait a few minutes before submitting again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const validationResult = contactSchema.safeParse(body);
 
