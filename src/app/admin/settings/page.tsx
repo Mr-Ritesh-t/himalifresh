@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Upload, Save, AlertCircle } from 'lucide-react';
+import { Upload, Save, AlertCircle, Mail, Send, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
@@ -11,6 +11,8 @@ export default function AdminSettingsPage() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingHero, setUploadingHero] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [testingEmail, setTestingEmail] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const [form, setForm] = useState({
     businessName: '',
@@ -297,6 +299,81 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Brevo Email Diagnostics & Test */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Mail className="h-5 w-5 text-himali-primary" />
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 font-serif">
+              Brevo Transactional Email Test & Diagnostics
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500 mb-4">
+            Test whether your Brevo API key and sender email are working properly. A test email will be sent to the owner address (<strong>riteshtayade68@gmail.com</strong>).
+          </p>
+
+          {testResult && (
+            <div
+              className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 ${
+                testResult.success
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : 'bg-rose-50 border-rose-200 text-rose-800'
+              }`}
+            >
+              {testResult.success ? (
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
+              ) : (
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
+              )}
+              <div className="leading-relaxed">
+                <strong>{testResult.success ? 'Success: ' : 'Brevo Error: '}</strong>
+                <span>{testResult.message}</span>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            disabled={testingEmail}
+            onClick={async () => {
+              setTestingEmail(true);
+              setTestResult(null);
+              try {
+                const res = await fetch('/api/admin/test-email', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ recipient: form.email || 'riteshtayade68@gmail.com' }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  setTestResult({
+                    success: true,
+                    message: `${data.message} (Message ID: ${data.messageId})`,
+                  });
+                  toast.success('Test email sent successfully!');
+                } else {
+                  setTestResult({
+                    success: false,
+                    message: data.error || (data.details ? JSON.stringify(data.details) : 'Failed to send test email'),
+                  });
+                  toast.error(data.error || 'Test email failed');
+                }
+              } catch (err: any) {
+                setTestResult({
+                  success: false,
+                  message: err.message || 'Network request failed',
+                });
+                toast.error('Network request failed');
+              } finally {
+                setTestingEmail(false);
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white shadow hover:bg-slate-900 transition-colors disabled:opacity-60"
+          >
+            <Send className="h-3.5 w-3.5" />
+            <span>{testingEmail ? 'Sending Test Email...' : 'Send Test Email Now'}</span>
+          </button>
         </div>
 
         {/* Save Button */}
