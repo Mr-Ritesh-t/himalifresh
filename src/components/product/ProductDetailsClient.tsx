@@ -1,12 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
-import { ShoppingCart, MessageSquare, Check, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import {
+  ShoppingCart,
+  MessageSquare,
+  Check,
+  ShieldCheck,
+  Truck,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -18,6 +27,30 @@ export function ProductDetailsClient({ product, whatsappNumber }: ProductDetails
   const [quantity, setQuantity] = useState(1);
   const existingInCart = items.find((i) => i.id === product.id);
 
+  const allImages = useMemo(() => {
+    const list: string[] = [];
+    if (product.mainImageUrl) list.push(product.mainImageUrl);
+    if (product.images && Array.isArray(product.images)) {
+      product.images.forEach((img) => {
+        if (img.imageUrl && !list.includes(img.imageUrl)) {
+          list.push(img.imageUrl);
+        }
+      });
+    }
+    return list.length > 0 ? list : ['/images/hero-banner.jpg'];
+  }, [product.mainImageUrl, product.images]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const currentImage = allImages[activeImageIndex] || allImages[0];
+
+  const handlePrevImage = () => {
+    setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : allImages.length - 1));
+  };
+
+  const handleNextImage = () => {
+    setActiveImageIndex((prev) => (prev < allImages.length - 1 ? prev + 1 : 0));
+  };
+
   const handleAddToCart = () => {
     addToCart(product, quantity);
   };
@@ -28,22 +61,83 @@ export function ProductDetailsClient({ product, whatsappNumber }: ProductDetails
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
       {/* Product Image Gallery */}
-      <div className="overflow-hidden rounded-3xl border border-himali-border bg-white p-4 shadow-card">
-        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-himali-cream/40">
-          <Image
-            src={product.mainImageUrl || '/images/hero-banner.jpg'}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-          />
-          {product.isFeatured && (
-            <span className="absolute top-4 left-4 rounded-full bg-himali-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-himali-dark shadow">
-              Featured Speciality
-            </span>
-          )}
+      <div className="space-y-4">
+        <div className="relative overflow-hidden rounded-3xl border border-himali-border bg-white p-3 sm:p-4 shadow-card">
+          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-himali-cream/40">
+            <Image
+              src={currentImage}
+              alt={product.name}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition-all duration-300"
+            />
+
+            {product.isFeatured && (
+              <span className="absolute top-4 left-4 rounded-full bg-himali-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-himali-dark shadow">
+                Featured Speciality
+              </span>
+            )}
+
+            {/* Photo Counter */}
+            {allImages.length > 1 && (
+              <span className="absolute bottom-4 right-4 rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-1 text-[11px] font-medium text-white shadow">
+                {activeImageIndex + 1} / {allImages.length}
+              </span>
+            )}
+
+            {/* Prev/Next Navigation Controls for Multiple Photos */}
+            {allImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePrevImage}
+                  aria-label="Previous photo"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 text-himali-dark shadow-md flex items-center justify-center hover:bg-white hover:scale-105 active:scale-95 transition-all"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextImage}
+                  aria-label="Next photo"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 text-himali-dark shadow-md flex items-center justify-center hover:bg-white hover:scale-105 active:scale-95 transition-all"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Thumbnail Strip */}
+        {allImages.length > 1 && (
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {allImages.map((imgUrl, idx) => {
+              const isActive = idx === activeImageIndex;
+              return (
+                <button
+                  key={`${imgUrl}-${idx}`}
+                  type="button"
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`relative h-18 w-18 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border-2 bg-white transition-all duration-200 ${
+                    isActive
+                      ? 'border-himali-green ring-2 ring-himali-green/20 scale-105 shadow-sm'
+                      : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-300'
+                  }`}
+                >
+                  <Image
+                    src={imgUrl}
+                    alt={`${product.name} thumbnail ${idx + 1}`}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Product Information & Purchase Area */}

@@ -23,6 +23,7 @@ export const productSchema = z.object({
   price: z.number().positive('Price must be greater than zero'),
   weight: z.string().min(1, 'Weight / Unit is required'),
   mainImageUrl: z.string().min(1, 'Image URL is required'),
+  galleryImages: z.array(z.string()).optional(),
   categoryId: z.string().min(1, 'Category is required'),
   isAvailable: z.boolean().default(true),
   isFeatured: z.boolean().default(false),

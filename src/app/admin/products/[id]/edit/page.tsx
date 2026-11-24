@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Upload, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Upload, AlertCircle, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminEditProductPage() {
@@ -16,6 +16,8 @@ export default function AdminEditProductPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
@@ -58,6 +60,9 @@ export default function AdminEditProductPage() {
             isFeatured: p.isFeatured,
             isActive: p.isActive,
           });
+          if (Array.isArray(p.images)) {
+            setGalleryImages(p.images.map((img: any) => img.imageUrl));
+          }
         }
       } catch (e) {
         console.error(e);
@@ -92,12 +97,54 @@ export default function AdminEditProductPage() {
       }
 
       setForm((prev) => ({ ...prev, mainImageUrl: data.url }));
-      toast.success('Product image uploaded successfully');
+      toast.success('Cover image updated');
     } catch (err) {
       toast.error('Network error during image upload');
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingGallery(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch('/api/admin/uploads', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.url) {
+          uploadedUrls.push(data.url);
+        } else {
+          toast.error(data.error || `Failed to upload ${file.name}`);
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        setGalleryImages((prev) => [...prev, ...uploadedUrls]);
+        toast.success(`Added ${uploadedUrls.length} gallery photo(s)`);
+      }
+    } catch (err) {
+      toast.error('Network error during gallery upload');
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeGalleryImage = (indexToRemove: number) => {
+    setGalleryImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +156,7 @@ export default function AdminEditProductPage() {
       const payload = {
         ...form,
         price: parseFloat(form.price),
+        galleryImages,
       };
 
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -255,13 +303,17 @@ export default function AdminEditProductPage() {
             />
           </div>
 
+          {/* Primary Cover Image */}
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Product Image
+              Primary Cover Photo *
             </label>
+            <p className="text-xs text-slate-500 mb-2">
+              Main photo shown on catalog cards and hero display.
+            </p>
             <div className="flex items-center gap-4">
               {form.mainImageUrl && (
-                <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-slate-300 bg-slate-50">
+                <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shrink-0">
                   <Image
                     src={form.mainImageUrl}
                     alt="Preview"
@@ -270,17 +322,77 @@ export default function AdminEditProductPage() {
                   />
                 </div>
               )}
-              <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors">
-                <Upload className="h-4 w-4" />
-                <span>{uploading ? 'Uploading...' : 'Replace Image'}</span>
+              <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                <Upload className="h-4 w-4 text-himali-primary" />
+                <span>{uploading ? 'Uploading Cover...' : form.mainImageUrl ? 'Change Cover Photo' : 'Upload Cover Photo'}</span>
                 <input
                   type="file"
                   accept="image/png, image/jpeg, image/webp"
                   onChange={handleFileUpload}
                   className="hidden"
+                  disabled={uploading}
                 />
               </label>
             </div>
+          </div>
+
+          {/* Additional Gallery Photos */}
+          <div className="border-t border-slate-100 pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <label className="block font-semibold text-slate-700">
+                  Additional Gallery Photos
+                </label>
+                <p className="text-xs text-slate-500">
+                  Upload multiple angles, packaging views, or ingredient close-ups.
+                </p>
+              </div>
+              <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                <Plus className="h-3.5 w-3.5 text-himali-primary" />
+                <span>{uploadingGallery ? 'Uploading...' : 'Add Photos'}</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleGalleryUpload}
+                  className="hidden"
+                  disabled={uploadingGallery}
+                />
+              </label>
+            </div>
+
+            {galleryImages.length > 0 ? (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
+                {galleryImages.map((imgUrl, idx) => (
+                  <div
+                    key={`${imgUrl}-${idx}`}
+                    className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm"
+                  >
+                    <Image
+                      src={imgUrl}
+                      alt={`Gallery ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(idx)}
+                      className="absolute top-1 right-1 h-5 w-5 rounded-full bg-red-600/90 text-white flex items-center justify-center opacity-90 hover:opacity-100 transition-opacity shadow"
+                      title="Remove image"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+                      #{idx + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 text-center text-xs text-slate-400">
+                No additional gallery photos added yet. Click &quot;Add Photos&quot; to upload multiple images.
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-6 pt-2">

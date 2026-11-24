@@ -45,13 +45,37 @@ export async function PATCH(
     const { id } = await context.params;
     const body = await request.json();
 
-    // Partial update or full update
-    const product = await prisma.product.update({
-      where: { id },
-      data: body,
-      include: {
-        category: true,
-      },
+    const { galleryImages, ...updateData } = body;
+
+    const product = await prisma.$transaction(async (tx) => {
+      await tx.product.update({
+        where: { id },
+        data: updateData,
+      });
+
+      if (Array.isArray(galleryImages)) {
+        await tx.productImage.deleteMany({
+          where: { productId: id },
+        });
+
+        if (galleryImages.length > 0) {
+          await tx.productImage.createMany({
+            data: galleryImages.map((url: string, idx: number) => ({
+              productId: id,
+              imageUrl: url,
+              displayOrder: idx,
+            })),
+          });
+        }
+      }
+
+      return tx.product.findUnique({
+        where: { id },
+        include: {
+          category: true,
+          images: { orderBy: { displayOrder: 'asc' } },
+        },
+      });
     });
 
     return NextResponse.json({ success: true, product });

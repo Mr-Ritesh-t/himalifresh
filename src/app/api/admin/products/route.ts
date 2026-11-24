@@ -71,21 +71,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const { galleryImages, ...productFields } = data;
+
     const product = await prisma.product.create({
       data: {
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        price: data.price,
-        weight: data.weight,
-        mainImageUrl: data.mainImageUrl,
-        categoryId: data.categoryId,
-        isAvailable: data.isAvailable,
-        isFeatured: data.isFeatured,
-        isActive: data.isActive,
+        name: productFields.name,
+        slug: productFields.slug,
+        description: productFields.description,
+        price: productFields.price,
+        weight: productFields.weight,
+        mainImageUrl: productFields.mainImageUrl,
+        categoryId: productFields.categoryId,
+        isAvailable: productFields.isAvailable,
+        isFeatured: productFields.isFeatured,
+        isActive: productFields.isActive,
+        images: galleryImages && galleryImages.length > 0
+          ? {
+              create: galleryImages.map((url, idx) => ({
+                imageUrl: url,
+                displayOrder: idx,
+              })),
+            }
+          : undefined,
       },
       include: {
         category: true,
+        images: { orderBy: { displayOrder: 'asc' } },
       },
     });
 
