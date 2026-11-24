@@ -9,6 +9,21 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { ProductDetailsClient } from '@/components/product/ProductDetailsClient';
 import { ChevronRight } from 'lucide-react';
 
+export const revalidate = 60; // ISR cache for fast page delivery
+
+export async function generateStaticParams() {
+  try {
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+      take: 30,
+    });
+    return products.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
+}
+
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }

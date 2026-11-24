@@ -9,6 +9,20 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { ChevronRight } from 'lucide-react';
 
+export const revalidate = 60; // ISR cache for fast page delivery
+
+export async function generateStaticParams() {
+  try {
+    const categories = await prisma.category.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+    });
+    return categories.map((c) => ({ category: c.slug }));
+  } catch {
+    return [];
+  }
+}
+
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
   searchParams: Promise<{ sort?: string }>;

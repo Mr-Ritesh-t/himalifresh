@@ -62,6 +62,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} scroll-smooth`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body suppressHydrationWarning className="min-h-screen flex flex-col justify-between selection:bg-himali-gold selection:text-himali-dark">
         <Providers>{children}</Providers>
       </body>

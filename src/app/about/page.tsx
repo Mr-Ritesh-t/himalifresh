@@ -7,6 +7,8 @@ import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { Mountain, Sprout, HeartHandshake, ShieldCheck, ArrowRight, MapPin } from 'lucide-react';
 
+export const revalidate = 300; // 5 minute ISR cache for fast static delivery
+
 export default async function AboutPage() {
   let settings = null;
   try {
