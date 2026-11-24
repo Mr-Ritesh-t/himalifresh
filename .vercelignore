@@ -1,0 +1,7 @@
+*.pptx
+*.md
+!README.md
+tests/
+.git/
+node_modules/
+.next/

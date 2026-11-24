@@ -18,7 +18,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export async function createAdminToken(payload: { id: string; email: string; role: string; name: string }): Promise<string> {
-  return new SignJWT(payload)
+  return new SignJWT({ ...payload, isAdmin: true })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(TOKEN_EXPIRY)
@@ -28,6 +28,8 @@ export async function createAdminToken(payload: { id: string; email: string; rol
 export async function verifyAdminToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
+    if (payload.isUser === true) return null;
+    if (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN') return null;
     return payload as { id: string; email: string; role: string; name: string };
   } catch (error) {
     return null;
@@ -62,7 +64,7 @@ export async function createUserToken(payload: UserSessionPayload): Promise<stri
 export async function verifyUserToken(token: string): Promise<UserSessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    if (!payload.id || !payload.email) return null;
+    if (payload.isUser !== true || !payload.id || !payload.email) return null;
     return {
       id: String(payload.id),
       email: String(payload.email),

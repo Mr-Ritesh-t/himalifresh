@@ -303,3 +303,34 @@ describe('6. Indian Postal PIN Code Verification & Deliverability', () => {
     expect(alpha.deliverable).toBe(false);
   });
 });
+
+describe('7. JWT Role Isolation & Auth Security', () => {
+  it('prevents customer user tokens from authenticating as admin and vice versa', async () => {
+    const {
+      createAdminToken,
+      verifyAdminToken,
+      createUserToken,
+      verifyUserToken,
+    } = await import('@/lib/auth');
+
+    const userToken = await createUserToken({
+      id: 'user-1',
+      email: 'customer@example.com',
+      name: 'Customer',
+      phone: '9876543210',
+    });
+
+    const adminToken = await createAdminToken({
+      id: 'admin-1',
+      email: 'admin@himalifresh.com',
+      role: 'SUPER_ADMIN',
+      name: 'Owner',
+    });
+
+    expect(await verifyUserToken(userToken)).not.toBeNull();
+    expect(await verifyAdminToken(userToken)).toBeNull();
+
+    expect(await verifyAdminToken(adminToken)).not.toBeNull();
+    expect(await verifyUserToken(adminToken)).toBeNull();
+  });
+});

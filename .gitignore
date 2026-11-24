@@ -39,3 +39,4 @@ dev.db-journal
 dev.db-wal
 dev.db-shm
 .neon
+*.pptx

@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
 
   // Tree-shake and optimize modular packages for faster JS execution & smaller bundles
   experimental: {
-    optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion'],
+    optimizePackageImports: ['lucide-react'],
   },
 
   // High-performance caching and security headers

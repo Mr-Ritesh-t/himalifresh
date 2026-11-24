@@ -507,7 +507,7 @@ export default function CheckoutPage() {
                 2. Order Summary
               </h2>
 
-              <div className="max-h-60 overflow-y-auto divide-y divide-himali-border/60 text-xs pr-3 custom-scrollbar">
+              <div className="max-h-60 overflow-y-auto divide-y divide-himali-border/60 text-xs custom-scrollbar" style={{ scrollbarGutter: 'stable' }}>
                 {items.map((item) => (
                   <div key={item.id} className="py-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -526,7 +526,7 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold text-himali-dark shrink-0 text-right tabular-nums">
+                    <span className="font-bold text-himali-dark shrink-0 text-right tabular-nums pl-2 min-w-[4.5rem]">
                       {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
@@ -653,7 +653,7 @@ export default function CheckoutPage() {
                       Items in Order ({items.length})
                     </div>
 
-                    <div className="divide-y divide-slate-100 max-h-40 overflow-y-auto pr-3.5 custom-scrollbar">
+                    <div className="divide-y divide-slate-100 max-h-40 overflow-y-auto custom-scrollbar" style={{ scrollbarGutter: 'stable' }}>
                       {items.map((item) => (
                         <div key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
                           <div className="min-w-0 flex-1">
@@ -662,7 +662,7 @@ export default function CheckoutPage() {
                               {item.weight} &times; {item.quantity}
                             </div>
                           </div>
-                          <span className="font-bold text-[#064B32] shrink-0 text-right tabular-nums">
+                          <span className="font-bold text-[#064B32] shrink-0 text-right tabular-nums pl-2 min-w-[4.5rem]">
                             {formatPrice(item.price * item.quantity)}
                           </span>
                         </div>

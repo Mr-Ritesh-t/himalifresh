@@ -18,7 +18,10 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
-      await jwtVerify(token, JWT_SECRET);
+      const { payload } = await jwtVerify(token, JWT_SECRET);
+      if (payload.isUser === true || (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN')) {
+        throw new Error('Forbidden');
+      }
       return NextResponse.next();
     } catch (err) {
       const loginUrl = new URL('/admin/login', request.url);
@@ -36,7 +39,10 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
-      await jwtVerify(token, JWT_SECRET);
+      const { payload } = await jwtVerify(token, JWT_SECRET);
+      if (payload.isUser === true || (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN')) {
+        return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
+      }
       return NextResponse.next();
     } catch (err) {
       return NextResponse.json({ success: false, error: 'Unauthorized or expired session' }, { status: 401 });

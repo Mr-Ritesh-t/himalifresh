@@ -16,23 +16,17 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.10.0",
-    "@neon/config": "^1.14.5",
-    "@neon/env": "^2.1.8",
     "@prisma/client": "^6.4.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.9.0",
     "@vercel/speed-insights": "^2.1.0",
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
-    "framer-motion": "^12.4.7",
     "jose": "^6.0.8",
     "lucide-react": "^0.475.0",
     "next": "^15.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.54.2",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.2",
     "zod": "^3.24.2"
