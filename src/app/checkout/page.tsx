@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/utils';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
-import { MessageSquare, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, UserCheck, MapPin, Loader2 } from 'lucide-react';
+import { MessageSquare, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, UserCheck, MapPin, Loader2, X, Edit2, Truck, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pincodeChecking, setPincodeChecking] = useState(false);
   const [pincodeResult, setPincodeResult] = useState<{
     valid: boolean;
@@ -122,7 +123,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleReviewOrder = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -131,12 +132,28 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!formData.customerName.trim() || !formData.phone.trim() || !formData.address.trim() || !formData.city.trim() || !formData.pincode.trim()) {
+    if (
+      !formData.customerName.trim() ||
+      !formData.phone.trim() ||
+      !formData.address.trim() ||
+      !formData.city.trim() ||
+      !formData.pincode.trim()
+    ) {
       toast.error('Please fill in all required delivery details');
       return;
     }
 
+    if (formData.pincode.trim().length !== 6 || !/^\d{6}$/.test(formData.pincode.trim())) {
+      toast.error('Please enter a valid 6-digit Indian PIN code');
+      return;
+    }
+
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmAndPlaceOrder = async () => {
     setLoading(true);
+    setError(null);
 
     try {
       const payload = {
@@ -166,6 +183,7 @@ export default function CheckoutPage() {
         setError(data.error || 'Failed to submit order. Please try again.');
         toast.error(data.error || 'Failed to submit order');
         setLoading(false);
+        setShowConfirmModal(false);
         return;
       }
 
@@ -191,6 +209,7 @@ export default function CheckoutPage() {
       setError('A network error occurred. Please verify your connection.');
       toast.error('A network error occurred.');
       setLoading(false);
+      setShowConfirmModal(false);
     }
   };
 
@@ -258,7 +277,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <form onSubmit={handleReviewOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Delivery Information Form */}
             <div className="lg:col-span-2 space-y-6">
               <div className="rounded-2xl border border-himali-border bg-white p-6 shadow-card space-y-5">
@@ -509,22 +528,161 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="w-full flex items-center justify-center gap-2 rounded-2xl bg-himali-green py-3.5 px-6 text-sm font-bold text-white shadow-md hover:bg-emerald-700 transition-all duration-200 disabled:opacity-60"
               >
-                {loading ? (
-                  <span className="animate-pulse">Processing Order Enquiry...</span>
-                ) : (
-                  <>
-                    <MessageSquare className="h-4 w-4" />
-                    <span>Submit & Chat on WhatsApp</span>
-                  </>
-                )}
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Review & Confirm Order</span>
               </button>
 
               <div className="flex items-center justify-center gap-2 text-[11px] text-himali-muted text-center pt-1">
                 <ShieldCheck className="h-3.5 w-3.5 text-himali-green shrink-0" />
-                <span>Zero upfront payment required on this form</span>
+                <span>You will review details before final submission</span>
               </div>
             </div>
           </form>
+
+          {/* ── Order Confirmation Modal ── */}
+          {showConfirmModal && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div
+                className="max-w-lg w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-himali-border animate-in zoom-in-95 duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="bg-[#064B32] p-5 text-white text-center relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmModal(false)}
+                    className="absolute right-4 top-4 text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <div className="inline-block px-3 py-1 rounded-full bg-[#E9BE54]/20 text-[#E9BE54] text-[11px] font-bold uppercase tracking-wider mb-1">
+                    Order Verification
+                  </div>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold">
+                    Confirm Your Order Enquiry
+                  </h2>
+                  <p className="text-xs text-white/80 mt-1 max-w-sm mx-auto">
+                    Please verify your delivery information and item summary before placing the order.
+                  </p>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-5 sm:p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                  {/* Delivery Details Card */}
+                  <div className="rounded-2xl bg-[#F8F5F0] p-4 border border-[#E8DFC8]/70 text-xs space-y-2">
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E2D9C8]">
+                      <span className="font-bold text-[#064B32] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-[#064B32]" />
+                        Delivery Destination
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmModal(false)}
+                        className="text-[#0B6B43] hover:underline font-semibold flex items-center gap-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="space-y-1 pt-1 text-slate-700">
+                      <div>
+                        <strong>Customer:</strong> {formData.customerName}
+                      </div>
+                      <div>
+                        <strong>Phone:</strong> {formData.phone}
+                      </div>
+                      {formData.email && (
+                        <div>
+                          <strong>Email:</strong> {formData.email}
+                        </div>
+                      )}
+                      <div>
+                        <strong>Address:</strong> {formData.address}, {formData.city} - {formData.pincode}
+                      </div>
+                      {formData.landmark && (
+                        <div>
+                          <strong>Landmark:</strong> {formData.landmark}
+                        </div>
+                      )}
+                      {formData.instructions && (
+                        <div>
+                          <strong>Instructions:</strong> {formData.instructions}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Items Summary Card */}
+                  <div className="rounded-2xl border border-slate-200 p-4 space-y-3">
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-slate-100">
+                      <ShoppingBag className="h-3.5 w-3.5 text-[#064B32]" />
+                      Items in Order ({items.length})
+                    </div>
+
+                    <div className="divide-y divide-slate-100 max-h-36 overflow-y-auto">
+                      {items.map((item) => (
+                        <div key={item.id} className="py-2 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-semibold text-slate-900">{item.name}</span>
+                            <div className="text-[11px] text-slate-500">
+                              {item.weight} &times; {item.quantity}
+                            </div>
+                          </div>
+                          <span className="font-bold text-[#064B32]">
+                            {formatPrice(item.price * item.quantity)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
+                      <span className="font-serif text-sm font-bold text-slate-900">Total Payable:</span>
+                      <span className="text-xl font-bold text-[#064B32]">{formatPrice(subtotal)}</span>
+                    </div>
+                  </div>
+
+                  {/* Clarification Box */}
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 flex items-start gap-2">
+                    <Truck className="h-4 w-4 shrink-0 text-amber-700 mt-0.5" />
+                    <span>
+                      Zero upfront payment required now. Our team in Siliguri will confirm availability and coordinate delivery via WhatsApp.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Modal Footer Actions */}
+                <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => setShowConfirmModal(false)}
+                    className="w-full sm:w-auto sm:flex-1 py-3 px-4 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
+                  >
+                    Go Back & Edit
+                  </button>
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={handleConfirmAndPlaceOrder}
+                    className="w-full sm:flex-2 flex items-center justify-center gap-2 rounded-xl bg-[#064B32] py-3 px-6 text-xs sm:text-sm font-bold text-white shadow hover:bg-[#043322] transition-colors disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Placing Your Order...</span>
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Yes, Confirm & Place Order</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
