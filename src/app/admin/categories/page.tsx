@@ -184,75 +184,140 @@ export default function AdminCategoriesPage() {
           <div className="py-16 text-center text-xs text-slate-500">
             Loading categories...
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 uppercase font-semibold">
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-3">Slug</th>
-                  <th className="py-3 px-3 text-center">Products</th>
-                  <th className="py-3 px-3 text-center">Order</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 shrink-0 rounded-full overflow-hidden border border-slate-200 bg-slate-100">
-                          <Image
-                            src={cat.imageUrl || '/images/hero-banner.jpg'}
-                            alt={cat.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">{cat.name}</p>
-                          <p className="text-[11px] text-slate-400 line-clamp-1">
-                            {cat.description || 'No description'}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-3 px-3 font-mono text-slate-600">
-                      /{cat.slug}
-                    </td>
-
-                    <td className="py-3 px-3 text-center font-bold text-slate-800">
-                      {cat._count?.products || 0}
-                    </td>
-
-                    <td className="py-3 px-3 text-center text-slate-500">
-                      {cat.displayOrder}
-                    </td>
-
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => openEditModal(cat)}
-                          className="p-1 text-emerald-600 hover:text-emerald-800"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(cat.id, cat.name)}
-                          className="p-1 text-red-500 hover:text-red-700"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        ) : categories.length === 0 ? (
+          <div className="py-16 text-center text-xs text-slate-500">
+            No categories found. Click &quot;Add Category&quot; to create one.
           </div>
+        ) : (
+          <>
+            {/* Mobile View: Responsive Cards (No horizontal scroll) */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {categories.map((cat) => (
+                <div key={cat.id} className="p-4 space-y-2.5 hover:bg-slate-50/60 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border border-slate-200 bg-slate-100">
+                      <Image
+                        src={cat.imageUrl || '/images/hero-banner.jpg'}
+                        alt={cat.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-semibold text-slate-900 text-sm leading-snug">
+                          {cat.name}
+                        </h3>
+                        <span className="inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+                          {cat._count?.products || 0} items
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-mono text-slate-400">
+                        /{cat.slug}
+                      </p>
+                      {cat.description && (
+                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
+                          {cat.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-xs">
+                    <span className="text-[11px] text-slate-400">
+                      Display Order: <strong className="text-slate-600 font-semibold">{cat.displayOrder}</strong>
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => openEditModal(cat)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-xs transition-colors"
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cat.id, cat.name)}
+                        className="p-1.5 text-red-500 hover:text-red-700 rounded-lg hover:bg-red-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table: Hidden on Mobile */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 uppercase font-semibold">
+                    <th className="py-3 px-4">Category</th>
+                    <th className="py-3 px-3">Slug</th>
+                    <th className="py-3 px-3 text-center">Products</th>
+                    <th className="py-3 px-3 text-center">Order</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {categories.map((cat) => (
+                    <tr key={cat.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="relative h-10 w-10 shrink-0 rounded-full overflow-hidden border border-slate-200 bg-slate-100">
+                            <Image
+                              src={cat.imageUrl || '/images/hero-banner.jpg'}
+                              alt={cat.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900">{cat.name}</p>
+                            <p className="text-[11px] text-slate-400 line-clamp-1">
+                              {cat.description || 'No description'}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-3 px-3 font-mono text-slate-600">
+                        /{cat.slug}
+                      </td>
+
+                      <td className="py-3 px-3 text-center font-bold text-slate-800">
+                        {cat._count?.products || 0}
+                      </td>
+
+                      <td className="py-3 px-3 text-center text-slate-500">
+                        {cat.displayOrder}
+                      </td>
+
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openEditModal(cat)}
+                            className="p-1 text-emerald-600 hover:text-emerald-800"
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(cat.id, cat.name)}
+                            className="p-1 text-red-500 hover:text-red-700"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
