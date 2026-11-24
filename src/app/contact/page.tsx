@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
-import { Phone, Mail, MapPin, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageSquare, Send, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ContactPage() {
@@ -59,8 +59,9 @@ export default function ContactPage() {
   };
 
   const phone = '+91 98320 78728';
-  const email = 'info@himalifresh.com';
+  const email = 'riteshtayade68@gmail.com';
   const address = 'Dagapur, Siliguri, West Bengal, India';
+  const mapUrl = 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
   const whatsappNumber = '919832078728';
 
   return (
@@ -98,6 +99,15 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold text-himali-dark">Physical Address</h4>
                       <p className="text-himali-muted mt-0.5">{address}</p>
+                      <a
+                        href={mapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-himali-green hover:underline mt-1.5"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        <span>View on Google Maps &rarr;</span>
+                      </a>
                     </div>
                   </div>
 
@@ -140,7 +150,7 @@ export default function ContactPage() {
               </div>
 
               {/* Embedded Google Map */}
-              <div className="overflow-hidden rounded-3xl border border-himali-border bg-white shadow-card h-64 sm:h-80">
+              <div className="overflow-hidden rounded-3xl border border-himali-border bg-white shadow-card h-64 sm:h-80 relative group">
                 <iframe
                   title="Himali Fresh Location Map"
                   src="https://maps.google.com/maps?q=Dagapur,+Siliguri,+West+Bengal&t=&z=14&ie=UTF8&iwloc=&output=embed"
@@ -149,6 +159,17 @@ export default function ContactPage() {
                   style={{ border: 0 }}
                   loading="lazy"
                 />
+                <div className="absolute bottom-3 right-3">
+                  <a
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-xs font-bold text-[#064B32] shadow-md hover:bg-white hover:shadow-lg transition-all border border-slate-200"
+                  >
+                    <MapPin className="h-3.5 w-3.5 text-red-600" />
+                    <span>Get Directions</span>
+                  </a>
+                </div>
               </div>
             </div>
 

@@ -160,7 +160,14 @@ export function Footer({ settings }: FooterProps) {
             <ul className="space-y-3 text-sm text-emerald-100/80">
               <li className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 shrink-0 text-himali-gold mt-1" />
-                <span>{address}</span>
+                <a
+                  href={settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white hover:underline transition-colors"
+                >
+                  {address}
+                </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 shrink-0 text-himali-gold" />
