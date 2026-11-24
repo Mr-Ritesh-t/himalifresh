@@ -175,61 +175,108 @@ export default function AdminDashboardPage() {
             No order enquiries recorded yet.
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-100 text-slate-400 uppercase tracking-wider font-semibold">
-                  <th className="py-2.5 px-3">Order Ref</th>
-                  <th className="py-2.5 px-3">Customer</th>
-                  <th className="py-2.5 px-3">Phone</th>
-                  <th className="py-2.5 px-3">City</th>
-                  <th className="py-2.5 px-3">Amount</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentOrders.map((ord: any) => (
-                  <tr key={ord.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3 px-3 font-semibold text-slate-900">
+          <>
+            {/* Mobile Cards (No horizontal scroll on phones) */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {recentOrders.map((ord: any) => (
+                <div key={ord.id} className="py-3.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-slate-900 text-sm">
                       #{ord.orderNumber}
-                    </td>
-                    <td className="py-3 px-3 font-medium text-slate-800">
-                      {ord.customerName}
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">{ord.phone}</td>
-                    <td className="py-3 px-3 text-slate-600">{ord.city}</td>
-                    <td className="py-3 px-3 font-bold text-himali-primary">
+                    </span>
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        ord.status === 'NEW'
+                          ? 'bg-amber-100 text-amber-800'
+                          : ord.status === 'CONFIRMED'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : ord.status === 'COMPLETED'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      {ord.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-baseline justify-between text-xs">
+                    <span className="font-semibold text-slate-800">{ord.customerName}</span>
+                    <span className="font-bold text-himali-primary text-sm">
                       {formatPrice(ord.totalAmount)}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          ord.status === 'NEW'
-                            ? 'bg-amber-100 text-amber-800'
-                            : ord.status === 'CONFIRMED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : ord.status === 'COMPLETED'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {ord.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <Link
-                        href={`/admin/orders/${ord.id}`}
-                        className="text-xs font-semibold text-himali-green hover:underline"
-                      >
-                        Inspect →
-                      </Link>
-                    </td>
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] pt-1">
+                    <span>{ord.phone} • {ord.city}</span>
+                    <Link
+                      href={`/admin/orders/${ord.id}`}
+                      className="inline-flex items-center gap-1 font-semibold text-himali-green hover:underline"
+                    >
+                      <span>Inspect</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (Hidden on mobile) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100 text-slate-400 uppercase tracking-wider font-semibold">
+                    <th className="py-2.5 px-3">Order Ref</th>
+                    <th className="py-2.5 px-3">Customer</th>
+                    <th className="py-2.5 px-3">Phone</th>
+                    <th className="py-2.5 px-3">City</th>
+                    <th className="py-2.5 px-3">Amount</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {recentOrders.map((ord: any) => (
+                    <tr key={ord.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-3 px-3 font-semibold text-slate-900">
+                        #{ord.orderNumber}
+                      </td>
+                      <td className="py-3 px-3 font-medium text-slate-800">
+                        {ord.customerName}
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">{ord.phone}</td>
+                      <td className="py-3 px-3 text-slate-600">{ord.city}</td>
+                      <td className="py-3 px-3 font-bold text-himali-primary">
+                        {formatPrice(ord.totalAmount)}
+                      </td>
+                      <td className="py-3 px-3">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            ord.status === 'NEW'
+                              ? 'bg-amber-100 text-amber-800'
+                              : ord.status === 'CONFIRMED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : ord.status === 'COMPLETED'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          {ord.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <Link
+                          href={`/admin/orders/${ord.id}`}
+                          className="text-xs font-semibold text-himali-green hover:underline"
+                        >
+                          Inspect →
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
