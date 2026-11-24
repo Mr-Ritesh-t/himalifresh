@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingBag, Eye, MessageSquare, ArrowUpDown } from 'lucide-react';
+import { Search, ShoppingBag, Eye, MessageSquare, ArrowUpDown, Download } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -37,6 +37,36 @@ export default function AdminOrdersPage() {
     loadOrders();
   };
 
+  const exportToCsv = () => {
+    if (orders.length === 0) {
+      toast.error('No orders to export');
+      return;
+    }
+    const headers = ['Order Number', 'Date', 'Customer Name', 'Phone', 'Address', 'City', 'PIN Code', 'Status', 'Total Amount', 'Items Count'];
+    const rows = orders.map((o) => [
+      o.orderNumber,
+      new Date(o.createdAt).toLocaleDateString('en-IN'),
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      `"${o.phone || ''}"`,
+      `"${(o.address || '').replace(/"/g, '""')}"`,
+      `"${o.city || ''}"`,
+      o.pincode || '',
+      o.status,
+      o.totalAmount,
+      o.items?.length || 0,
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `himali-fresh-orders-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Orders exported successfully to CSV');
+  };
+
   const statuses = ['ALL', 'NEW', 'CONTACTED', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
 
   return (
@@ -49,6 +79,16 @@ export default function AdminOrdersPage() {
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Review incoming WhatsApp checkout requests and manage fulfillment statuses
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportToCsv}
+            disabled={orders.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" />
+            <span>Export CSV</span>
+          </button>
         </div>
       </div>
 

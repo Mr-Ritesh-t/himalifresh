@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
     const where: any = {};
     if (q) {
       where.OR = [
-        { name: { contains: q } },
-        { description: { contains: q } },
+        { name: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
       ];
     }
     if (categoryId) {

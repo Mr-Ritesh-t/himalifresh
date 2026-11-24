@@ -81,6 +81,11 @@ export function Footer({ settings }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/track" className="hover:text-white transition-colors">
+                  Track Your Order
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="hover:text-white transition-colors">
                   About Our Heritage
                 </Link>

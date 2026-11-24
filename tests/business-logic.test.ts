@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { formatPrice, slugify, generateOrderNumber } from '@/lib/utils';
 import { buildWhatsAppOrderMessage, generateWhatsAppUrl } from '@/lib/whatsapp';
 import { checkoutSchema, productSchema, categorySchema, loginSchema } from '@/lib/validations';
@@ -252,6 +252,25 @@ describe('5. Brevo Email Integration & Checkout Email Validation', () => {
 
 describe('6. Indian Postal PIN Code Verification & Deliverability', () => {
   it('validates 6-digit Indian PIN codes and flags local Himalayan express delivery', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async (url: any) => {
+      if (typeof url === 'string' && url.includes('734003')) {
+        return {
+          ok: true,
+          json: async () => [{
+            Status: 'Success',
+            PostOffice: [{ District: 'Darjeeling', State: 'West Bengal', Block: 'Siliguri' }],
+          }],
+        } as any;
+      }
+      return {
+        ok: true,
+        json: async () => [{
+          Status: 'Success',
+          PostOffice: [{ District: 'Central Delhi', State: 'Delhi', Block: 'New Delhi' }],
+        }],
+      } as any;
+    });
+
     const { verifyPincode } = await import('@/lib/pincode');
 
     // Local Siliguri PIN
@@ -264,6 +283,8 @@ describe('6. Indian Postal PIN Code Verification & Deliverability', () => {
     const delhi = await verifyPincode('110001');
     expect(delhi.valid).toBe(true);
     expect(delhi.deliverable).toBe(true);
+
+    fetchSpy.mockRestore();
   });
 
   it('rejects invalid PIN code lengths and formats', async () => {

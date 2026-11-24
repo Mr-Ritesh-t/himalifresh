@@ -57,9 +57,44 @@ export default async function ProductPage({ params }: ProductPageProps) {
   ]);
 
   const whatsappNumber = settings?.whatsappNumber || '919832078728';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.himalifresh.com';
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: product.mainImageUrl
+      ? product.mainImageUrl.startsWith('http')
+        ? product.mainImageUrl
+        : `${appUrl}${product.mainImageUrl}`
+      : undefined,
+    description: product.description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Himali Fresh',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'INR',
+      price: product.price,
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: product.isAvailable
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      url: `${appUrl}/product/${product.slug}`,
+      seller: {
+        '@type': 'Organization',
+        name: 'Himali Fresh',
+      },
+    },
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-himali-cream/30">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header settings={settings || undefined} />
 
       <main className="flex-1 py-8 sm:py-12">
