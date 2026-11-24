@@ -507,10 +507,10 @@ export default function CheckoutPage() {
                 2. Order Summary
               </h2>
 
-              <div className="max-h-60 overflow-y-auto divide-y divide-himali-border/60 text-xs">
+              <div className="max-h-60 overflow-y-auto divide-y divide-himali-border/60 text-xs pr-3 custom-scrollbar">
                 {items.map((item) => (
                   <div key={item.id} className="py-2.5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-himali-cream/50">
                         <Image
                           src={item.mainImageUrl || '/images/hero-banner.jpg'}
@@ -519,14 +519,14 @@ export default function CheckoutPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div>
-                        <p className="font-semibold text-himali-dark line-clamp-1">{item.name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-himali-dark truncate">{item.name}</p>
                         <p className="text-himali-muted">
                           {item.weight} × {item.quantity}
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold text-himali-dark shrink-0">
+                    <span className="font-bold text-himali-dark shrink-0 text-right tabular-nums">
                       {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
@@ -600,7 +600,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-5 sm:p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                <div className="p-5 sm:p-6 space-y-4 max-h-[65vh] overflow-y-auto custom-scrollbar">
                   {/* Delivery Details Card */}
                   <div className="rounded-2xl bg-[#F8F5F0] p-4 border border-[#E8DFC8]/70 text-xs space-y-2">
                     <div className="flex items-center justify-between pb-2 border-b border-[#E2D9C8]">
@@ -653,16 +653,16 @@ export default function CheckoutPage() {
                       Items in Order ({items.length})
                     </div>
 
-                    <div className="divide-y divide-slate-100 max-h-36 overflow-y-auto">
+                    <div className="divide-y divide-slate-100 max-h-40 overflow-y-auto pr-3.5 custom-scrollbar">
                       {items.map((item) => (
-                        <div key={item.id} className="py-2 flex items-center justify-between text-xs">
-                          <div>
-                            <span className="font-semibold text-slate-900">{item.name}</span>
+                        <div key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+                          <div className="min-w-0 flex-1">
+                            <span className="font-semibold text-slate-900 block truncate">{item.name}</span>
                             <div className="text-[11px] text-slate-500">
                               {item.weight} &times; {item.quantity}
                             </div>
                           </div>
-                          <span className="font-bold text-[#064B32]">
+                          <span className="font-bold text-[#064B32] shrink-0 text-right tabular-nums">
                             {formatPrice(item.price * item.quantity)}
                           </span>
                         </div>
