@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Upload, AlertCircle, X, Plus } from 'lucide-react';
+import { ArrowLeft, Upload, AlertCircle, X, Plus, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminEditProductPage() {
@@ -309,9 +309,9 @@ export default function AdminEditProductPage() {
               Primary Cover Photo *
             </label>
             <p className="text-xs text-slate-500 mb-2">
-              Main photo shown on catalog cards and hero display.
+              Main photo shown on catalog cards and hero display. Choose from gallery or capture with camera.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               {form.mainImageUrl && (
                 <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shrink-0">
                   <Image
@@ -322,43 +322,73 @@ export default function AdminEditProductPage() {
                   />
                 </div>
               )}
-              <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                <Upload className="h-4 w-4 text-himali-primary" />
-                <span>{uploading ? 'Uploading Cover...' : form.mainImageUrl ? 'Change Cover Photo' : 'Upload Cover Photo'}</span>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  disabled={uploading}
-                />
-              </label>
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                  <Upload className="h-4 w-4 text-himali-primary" />
+                  <span>{uploading ? 'Uploading...' : form.mainImageUrl ? 'Change File' : 'Choose Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+
+                <label className="inline-flex items-center gap-2 rounded-xl border border-emerald-600 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800 cursor-pointer hover:bg-emerald-100 transition-colors shadow-sm">
+                  <Camera className="h-4 w-4 text-emerald-700" />
+                  <span>{uploading ? 'Uploading...' : 'Take Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
             </div>
           </div>
 
           {/* Additional Gallery Photos */}
           <div className="border-t border-slate-100 pt-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
               <div>
                 <label className="block font-semibold text-slate-700">
                   Additional Gallery Photos
                 </label>
                 <p className="text-xs text-slate-500">
-                  Upload multiple angles, packaging views, or ingredient close-ups.
+                  Upload multiple angles, packaging views, or snap items directly with your camera.
                 </p>
               </div>
-              <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-                <Plus className="h-3.5 w-3.5 text-himali-primary" />
-                <span>{uploadingGallery ? 'Uploading...' : 'Add Photos'}</span>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={handleGalleryUpload}
-                  className="hidden"
-                  disabled={uploadingGallery}
-                />
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                  <Plus className="h-3.5 w-3.5 text-himali-primary" />
+                  <span>{uploadingGallery ? 'Uploading...' : 'Add Files'}</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleGalleryUpload}
+                    className="hidden"
+                    disabled={uploadingGallery}
+                  />
+                </label>
+
+                <label className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-600 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 cursor-pointer hover:bg-emerald-100 transition-colors">
+                  <Camera className="h-3.5 w-3.5 text-emerald-700" />
+                  <span>{uploadingGallery ? 'Uploading...' : 'Take Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleGalleryUpload}
+                    className="hidden"
+                    disabled={uploadingGallery}
+                  />
+                </label>
+              </div>
             </div>
 
             {galleryImages.length > 0 ? (

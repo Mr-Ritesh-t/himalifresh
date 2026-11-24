@@ -18,36 +18,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No file provided' }, { status: 400 });
     }
 
-    // Validate MIME type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
-    if (!allowedTypes.includes(file.type)) {
+    // Validate image type (supports standard formats, mobile camera JPEG, PNG, WEBP, and HEIC)
+    const isImage =
+      (file.type && file.type.startsWith('image/')) ||
+      /\.(jpe?g|png|webp|svg|heic|heif)$/i.test(file.name);
+
+    if (!isImage) {
       return NextResponse.json(
-        { success: false, error: 'Invalid file type. Only JPEG, PNG, WEBP, and SVG are supported.' },
+        { success: false, error: 'Invalid file type. Please upload an image file (JPEG, PNG, WEBP).' },
         { status: 400 }
       );
     }
 
-    // Max 5MB
-    if (file.size > 5 * 1024 * 1024) {
+    // Max 10MB to accommodate high-res camera captures
+    if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
-        { success: false, error: 'File size exceeds limit of 5MB.' },
+        { success: false, error: 'File size exceeds limit of 10MB.' },
         { status: 400 }
       );
     }
 
-    // Create unique filename
-    const ext = path.extname(file.name) || '.jpg';
-    const cleanBaseName = path.basename(file.name, ext).replace(/[^\w-]/g, '');
-    const filename = `${cleanBaseName || 'upload'}-${Date.now()}${ext}`;
+    // Create unique filename with reliable extension for camera captures
+    let ext = path.extname(file.name);
+    if (!ext || ext === '.') {
+      if (file.type?.includes('png')) ext = '.png';
+      else if (file.type?.includes('webp')) ext = '.webp';
+      else if (file.type?.includes('svg')) ext = '.svg';
+      else ext = '.jpg';
+    }
+    const cleanBaseName = path.basename(file.name, ext).replace(/[^\w-]/g, '') || 'photo';
+    const filename = `${cleanBaseName}-${Date.now()}${ext.toLowerCase()}`;
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+
+    const contentType = file.type && file.type.startsWith('image/') ? file.type : 'image/jpeg';
 
     // If Vercel Blob is configured (Production on Vercel)
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const blob = await put(`products/${filename}`, buffer, {
         access: 'public',
-        contentType: file.type,
+        contentType,
       });
 
       return NextResponse.json({

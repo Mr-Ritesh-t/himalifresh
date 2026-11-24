@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Plus, Edit, Trash2, Layers, Upload, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Layers, Upload, X, Camera } from 'lucide-react';
 import { slugify } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -307,20 +307,33 @@ export default function AdminCategoriesPage() {
 
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Category Image</label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
                   {form.imageUrl && (
-                    <div className="relative h-12 w-12 rounded-full overflow-hidden border border-slate-300">
+                    <div className="relative h-12 w-12 rounded-full overflow-hidden border border-slate-300 shrink-0">
                       <Image src={form.imageUrl} alt="preview" fill className="object-cover" />
                     </div>
                   )}
-                  <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">
-                    <Upload className="h-3.5 w-3.5" />
-                    <span>{uploading ? 'Uploading...' : 'Upload Image'}</span>
+                  <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 shadow-sm">
+                    <Upload className="h-3.5 w-3.5 text-himali-primary" />
+                    <span>{uploading ? 'Uploading...' : 'Choose File'}</span>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleFileUpload}
                       className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                  <label className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-600 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 cursor-pointer hover:bg-emerald-100 shadow-sm">
+                    <Camera className="h-3.5 w-3.5 text-emerald-700" />
+                    <span>Take Photo</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={uploading}
                     />
                   </label>
                 </div>
