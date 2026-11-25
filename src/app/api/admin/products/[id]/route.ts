@@ -119,13 +119,12 @@ export async function DELETE(
   try {
     const { id } = await context.params;
 
-    // Soft delete by setting isActive: false or safe delete
-    await prisma.product.update({
+    // Delete product (OrderItem has onDelete: SetNull & preserves snapshots; ProductImage has onDelete: Cascade)
+    await prisma.product.delete({
       where: { id },
-      data: { isActive: false, isAvailable: false },
     });
 
-    return NextResponse.json({ success: true, message: 'Product archived successfully' });
+    return NextResponse.json({ success: true, message: 'Product deleted successfully' });
   } catch (error: any) {
     console.error('Error deleting product:', error);
     return NextResponse.json({ success: false, error: 'Failed to delete product' }, { status: 500 });

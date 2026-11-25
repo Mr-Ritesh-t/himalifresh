@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const q = searchParams.get('q') || '';
     const categoryId = searchParams.get('categoryId') || '';
 
-    const where: any = {};
+    const where: any = { isActive: true };
     if (q) {
       where.OR = [
         { name: { contains: q, mode: 'insensitive' } },

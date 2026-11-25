@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Plus, Search, Edit, Trash2, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, CheckCircle2, XCircle, FileDown, Loader2 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
+import { downloadProductCatalogPdf } from '@/lib/catalog-pdf';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -13,6 +14,9 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadData = async () => {
     try {
@@ -75,20 +79,28 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to deactivate and remove "${name}" from the store?`)) {
-      return;
-    }
+  const handleDelete = (id: string, name: string) => {
+    setDeleteTarget({ id, name });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+      setDeleting(true);
+      const res = await fetch(`/api/admin/products/${deleteTarget.id}`, { method: 'DELETE' });
       const data = await res.json();
-      if (data.success) {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
-        toast.success('Product removed successfully');
+      if (res.ok && data.success) {
+        setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+        toast.success('Product deleted successfully');
+        setDeleteTarget(null);
+      } else {
+        toast.error(data.error || 'Failed to delete product');
       }
     } catch (e) {
       toast.error('Failed to delete product');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -99,6 +111,41 @@ export default function AdminProductsPage() {
     const matchCat = !selectedCat || p.categoryId === selectedCat;
     return matchSearch && matchCat;
   });
+
+  const handleDownloadCatalogPdf = async () => {
+    if (filtered.length === 0) {
+      toast.error('No products available to export');
+      return;
+    }
+
+    try {
+      setDownloadingPdf(true);
+      let settings;
+      try {
+        const res = await fetch('/api/settings');
+        const json = await res.json();
+        if (json.success) settings = json.settings;
+      } catch {
+        // Fallback to defaults inside PDF generator
+      }
+
+      const selectedCategoryName = selectedCat
+        ? categories.find((c) => c.id === selectedCat)?.name
+        : undefined;
+
+      await downloadProductCatalogPdf({
+        products: filtered,
+        settings,
+        filterLabel: selectedCategoryName || (search.trim() ? `Search: "${search.trim()}"` : undefined),
+      });
+      toast.success('Product catalog PDF downloaded');
+    } catch (e) {
+      console.error('Failed to generate catalog PDF:', e);
+      toast.error('Failed to generate PDF catalog');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -113,13 +160,29 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        <Link
-          href="/admin/products/new"
-          className="inline-flex items-center gap-1.5 rounded-xl bg-himali-primary px-4 py-2 text-xs font-semibold text-white shadow hover:bg-himali-dark transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Create New Product</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleDownloadCatalogPdf}
+            disabled={loading || downloadingPdf || filtered.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-himali-primary bg-white px-4 py-2 text-xs font-semibold text-himali-primary shadow-sm hover:bg-himali-cream/40 transition-colors disabled:opacity-50"
+          >
+            {downloadingPdf ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FileDown className="h-4 w-4" />
+            )}
+            <span>{downloadingPdf ? 'Generating PDF...' : 'Download Catalog PDF'}</span>
+          </button>
+
+          <Link
+            href="/admin/products/new"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-himali-primary px-4 py-2 text-xs font-semibold text-white shadow hover:bg-himali-dark transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Create New Product</span>
+          </Link>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -374,6 +437,64 @@ export default function AdminProductsPage() {
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs"
+          onClick={() => !deleting && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-slate-900">
+                  Delete Product
+                </h3>
+                <p className="mt-1 text-xs text-slate-600 leading-relaxed">
+                  Are you sure you want to delete{' '}
+                  <span className="font-semibold text-slate-900">&ldquo;{deleteTarget.name}&rdquo;</span>?
+                  This will remove it from your store catalogue.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setDeleteTarget(null)}
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={confirmDelete}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-red-700 disabled:opacity-60"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Product</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
