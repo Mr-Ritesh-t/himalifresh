@@ -119,41 +119,37 @@ export async function POST(request: NextRequest) {
     // 5. Check if user is logged in
     const userSession = await getUserSession();
 
-    // 6. Save order inside a database transaction
-    const order = await prisma.$transaction(async (tx) => {
-      const newOrder = await tx.order.create({
-        data: {
-          orderNumber,
-          userId: userSession?.id || null,
-          customerName,
-          phone,
-          address,
-          city,
-          pincode,
-          landmark,
-          instructions: instructions
-            ? (email && !userSession ? `[Email: ${email}] ${instructions}` : instructions)
-            : (email && !userSession ? `[Email: ${email}]` : null),
-          totalAmount: calculatedTotal,
-          status: 'NEW',
-          items: {
-            create: orderItemsData,
-          },
-          statusHistory: {
-            create: {
-              previousStatus: 'NONE',
-              newStatus: 'NEW',
-              changedBy: 'System / Customer Checkout',
-              notes: 'Order enquiry created via website checkout',
-            },
+    // 6. Save order (nested create is atomic)
+    const order = await prisma.order.create({
+      data: {
+        orderNumber,
+        userId: userSession?.id || null,
+        customerName,
+        phone,
+        address,
+        city,
+        pincode,
+        landmark,
+        instructions: instructions
+          ? (email && !userSession ? `[Email: ${email}] ${instructions}` : instructions)
+          : (email && !userSession ? `[Email: ${email}]` : null),
+        totalAmount: calculatedTotal,
+        status: 'NEW',
+        items: {
+          create: orderItemsData,
+        },
+        statusHistory: {
+          create: {
+            previousStatus: 'NONE',
+            newStatus: 'NEW',
+            changedBy: 'System / Customer Checkout',
+            notes: 'Order enquiry created via website checkout',
           },
         },
-        include: {
-          items: true,
-        },
-      });
-
-      return newOrder;
+      },
+      include: {
+        items: true,
+      },
     });
 
     // 6. Trigger Brevo Transactional Email Notifications

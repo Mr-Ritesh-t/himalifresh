@@ -69,35 +69,33 @@ export async function PATCH(
       updateData.slug = finalSlug;
     }
 
-    const product = await prisma.$transaction(async (tx) => {
-      await tx.product.update({
-        where: { id },
-        data: updateData,
+    await prisma.product.update({
+      where: { id },
+      data: updateData,
+    });
+
+    if (Array.isArray(galleryImages)) {
+      await prisma.productImage.deleteMany({
+        where: { productId: id },
       });
 
-      if (Array.isArray(galleryImages)) {
-        await tx.productImage.deleteMany({
-          where: { productId: id },
+      if (galleryImages.length > 0) {
+        await prisma.productImage.createMany({
+          data: galleryImages.map((url: string, idx: number) => ({
+            productId: id,
+            imageUrl: url,
+            displayOrder: idx,
+          })),
         });
-
-        if (galleryImages.length > 0) {
-          await tx.productImage.createMany({
-            data: galleryImages.map((url: string, idx: number) => ({
-              productId: id,
-              imageUrl: url,
-              displayOrder: idx,
-            })),
-          });
-        }
       }
+    }
 
-      return tx.product.findUnique({
-        where: { id },
-        include: {
-          category: true,
-          images: { orderBy: { displayOrder: 'asc' } },
-        },
-      });
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        images: { orderBy: { displayOrder: 'asc' } },
+      },
     });
 
     return NextResponse.json({ success: true, product });
