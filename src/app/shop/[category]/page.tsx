@@ -9,7 +9,7 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { ChevronRight } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;

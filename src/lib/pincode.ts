@@ -26,6 +26,9 @@ const REGION_MAP: Record<string, { state: string; days: string }> = {
   '8': { state: 'Eastern Region (Bihar, Jharkhand)', days: '3-4 business days' },
 };
 
+// In-memory cache for validated pincodes to avoid repeated external network requests
+const PINCODE_CACHE = new Map<string, PincodeInfo>();
+
 export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
   const pincode = (pincodeRaw || '').trim();
 
@@ -37,6 +40,12 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
       pincode,
       error: 'Invalid PIN code. Please enter a valid 6-digit Indian Postal PIN code.',
     };
+  }
+
+  // Check in-memory cache
+  const cached = PINCODE_CACHE.get(pincode);
+  if (cached) {
+    return cached;
   }
 
   // Check for local Himalayan express delivery zones:
@@ -53,7 +62,6 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
     const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
       signal: controller.signal,
       headers: { accept: 'application/json' },
-      cache: 'force-cache',
     });
 
     clearTimeout(timeoutId);
@@ -66,7 +74,7 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
         const state = primary.State || '';
         const city = primary.Block && primary.Block !== 'NA' ? primary.Block : district;
 
-        return {
+        const result: PincodeInfo = {
           valid: true,
           deliverable: true,
           pincode,
@@ -76,6 +84,8 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
           estimatedDays: isLocalHimalayan ? '1 - 2 business days' : '3 - 5 business days',
           deliveryType: isLocalHimalayan ? 'Local Himalayan Express Dispatch' : 'Pan-India Express Courier',
         };
+        PINCODE_CACHE.set(pincode, result);
+        return result;
       }
     }
   } catch (err) {
@@ -86,7 +96,7 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
   const firstDigit = pincode[0];
   const region = REGION_MAP[firstDigit] || { state: 'India', days: '3-5 business days' };
 
-  return {
+  const fallbackResult: PincodeInfo = {
     valid: true,
     deliverable: true,
     pincode,
@@ -95,4 +105,6 @@ export async function verifyPincode(pincodeRaw: string): Promise<PincodeInfo> {
     estimatedDays: isLocalHimalayan ? '1 - 2 business days' : region.days,
     deliveryType: isLocalHimalayan ? 'Local Himalayan Express Dispatch' : 'Pan-India Express Courier',
   };
+  PINCODE_CACHE.set(pincode, fallbackResult);
+  return fallbackResult;
 }

@@ -73,7 +73,7 @@ export default function RootLayout({
           src="https://www.boosthis.com/kit.js"
           data-key="bksend_3ab86b26b8f75c77f63e3138de348679c88d4693a895ff96e0d25b04089cf8e3"
           data-install="761b088a-10e6-49b5-89ad-afc0db6b2727"
-          data-project="himalifresh'"
+          data-project="himalifresh"
         />
       </head>
       <body suppressHydrationWarning className="min-h-screen flex flex-col justify-between selection:bg-himali-gold selection:text-himali-dark">

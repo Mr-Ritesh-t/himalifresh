@@ -11,6 +11,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <Link
       href={`/shop?category=${category.slug}`}
+      prefetch={false}
       className="group flex flex-col items-center justify-start gap-1 sm:gap-2 p-1.5 sm:p-2.5 rounded-2xl border border-[#E8DFC8]/60 bg-[#FAF5EB]/80 hover:bg-white hover:border-[#064B32]/30 hover:shadow-md transition-all duration-300 text-center shrink-0 w-[78px] sm:w-auto"
     >
       {/* Circular image with proper mobile responsive size */}

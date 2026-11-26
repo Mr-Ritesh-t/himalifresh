@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#E8DFC8]/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-[#064B32]/30">
       {/* Product Image — full bleed top */}
       <div className="relative w-full overflow-hidden bg-[#FAF5EB]" style={{ aspectRatio: '1/1' }}>
-        <Link href={`/product/${product.slug}`} className="block h-full w-full">
+        <Link href={`/product/${product.slug}`} prefetch={false} className="block h-full w-full">
           <Image
             src={product.mainImageUrl || '/images/herobanner.png'}
             alt={product.name}
@@ -47,9 +47,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Product Details */}
       <div className="flex flex-col p-2 sm:p-3">
-        {/* Name */}
-        <Link href={`/product/${product.slug}`}>
-          <h3 className="line-clamp-2 text-[11px] sm:text-sm font-semibold text-gray-800 leading-tight hover:text-[#064B32] transition-colors min-h-[26px]">
+        {/* Name with locked min-height to prevent CLS */}
+        <Link href={`/product/${product.slug}`} prefetch={false}>
+          <h3 className="line-clamp-2 text-[11px] sm:text-sm font-semibold text-gray-800 leading-tight hover:text-[#064B32] transition-colors min-h-[32px] sm:min-h-[38px] flex items-start">
             {product.name}
           </h3>
         </Link>

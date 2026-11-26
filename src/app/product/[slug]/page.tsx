@@ -9,7 +9,7 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { ProductDetailsClient } from '@/components/product/ProductDetailsClient';
 import { ChevronRight } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
