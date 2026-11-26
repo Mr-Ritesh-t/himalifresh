@@ -22,5 +22,19 @@
     "BREVO_SENDER_NAME": "Himali Fresh",
     "TIGRIS_STORAGE_BUCKET": "himalifresh-images",
     "TIGRIS_STORAGE_ENDPOINT": "https://t3.storage.dev"
+  },
+  "previews": {
+    "vars": {
+      "NEXT_PUBLIC_BUSINESS_PHONE": "+91 98320 78728",
+      "NEXT_PUBLIC_WHATSAPP_NUMBER": "919832078728",
+      "NEXT_PUBLIC_BUSINESS_EMAIL": "riteshtayade68@gmail.com",
+      "NEXT_PUBLIC_BUSINESS_NAME": "Himali Fresh",
+      "NEXT_PUBLIC_BUSINESS_TAGLINE": "The Spirit of Himalayas",
+      "NEXT_PUBLIC_BUSINESS_ADDRESS": "Dagapur, Siliguri, West Bengal, India",
+      "NEXT_PUBLIC_APP_URL": "https://himalifresh.riteshtayade68.workers.dev",
+      "BREVO_SENDER_NAME": "Himali Fresh",
+      "TIGRIS_STORAGE_BUCKET": "himalifresh-images",
+      "TIGRIS_STORAGE_ENDPOINT": "https://t3.storage.dev"
+    }
   }
 }
