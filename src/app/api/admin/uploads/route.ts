@@ -3,6 +3,8 @@ import { getAdminSession } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { put } from '@vercel/blob';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { getTigrisClient, getTigrisConfig, isTigrisConfigured } from '@/lib/tigris';
 
 export async function POST(request: NextRequest) {
   const session = await getAdminSession();
@@ -60,7 +62,29 @@ export async function POST(request: NextRequest) {
 
     const contentType = file.type && file.type.startsWith('image/') ? file.type : 'image/jpeg';
 
-    // If Vercel Blob is configured (Production on Vercel)
+    // 1. Tigris Object Storage (Private bucket + cached /api/images/ proxy)
+    if (isTigrisConfigured()) {
+      const { bucket } = getTigrisConfig();
+      const s3 = getTigrisClient();
+
+      const key = `products/${filename}`;
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: buffer,
+          ContentType: contentType,
+        })
+      );
+
+      return NextResponse.json({
+        success: true,
+        url: `/api/images/${key}`,
+        filename,
+      });
+    }
+
+    // 2. Fallback: Vercel Blob (if configured)
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const blob = await put(`products/${filename}`, buffer, {
         access: 'public',
