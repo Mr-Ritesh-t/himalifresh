@@ -69,7 +69,7 @@ export default function TermsPage() {
                   Himali Fresh curates authentic regional delicacies sourced from farmers and artisanal kitchens across Darjeeling, Kalimpong, Sikkim, and the Himalayan foothills (including genuine Dalle Khursani chillies, wild Timur pepper, Gundruk, Chhurpi yak cheese, and seasonal bamboo shoots).
                 </p>
                 <p>
-                  Because these agricultural products depend on weather cycles and harvest seasons, occasional variations in taste, pungency, or seasonal stock shortages may occur. If an item you ordered is unavailable, we will promptly notify you and offer either a replacement or immediate refund.
+                  Because these agricultural products depend on weather cycles and harvest seasons, occasional variations in taste, pungency, or seasonal stock shortages may occur. If an item you ordered is unavailable prior to dispatch, our team will promptly notify you on WhatsApp to adjust your order before packaging.
                 </p>
               </section>
 
@@ -98,30 +98,45 @@ export default function TermsPage() {
                 </p>
               </section>
 
-              {/* 6. Limitation of Liability */}
+              {/* 6. All Sales Final — No Return, Replacement, or Refund */}
+              <section className="space-y-2 rounded-2xl bg-red-50/70 p-5 border border-red-200">
+                <h2 className="font-serif text-lg font-bold text-red-950">
+                  6. All Sales Final — Strict No Return, No Replacement &amp; No Refund Policy
+                </h2>
+                <p className="text-red-950 font-medium">
+                  Due to the consumable, perishable, and artisanal nature of food products, Himali Fresh operates on a strict <strong>NO RETURN, NO REPLACEMENT, AND NO REFUND</strong> policy. All sales are final once an order has been dispatched.
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-xs text-red-900">
+                  <li>No returns or exchanges are accepted under FSSAI food hygiene guidelines.</li>
+                  <li>No replacements are issued for subjective taste preferences or courier transit times.</li>
+                  <li>Cancellations are accepted strictly before package dispatch from our Siliguri hub.</li>
+                </ul>
+              </section>
+
+              {/* 7. Limitation of Liability */}
               <section className="space-y-2">
                 <h2 className="font-serif text-lg font-bold text-gray-900">
-                  6. Food Safety &amp; Allergen Disclaimers
+                  7. Food Safety &amp; Allergen Disclaimers
                 </h2>
                 <p>
                   While we take utmost care to describe all ingredients accurately (such as mustard oil in traditional pickles or spices in titoura snacks), customers with severe food allergies (e.g., mustard, gluten, dairy, or extreme chilli capsaicin sensitivity) are strongly advised to inspect the product packaging details before consumption.
                 </p>
               </section>
 
-              {/* 7. Governing Law & Jurisdiction */}
+              {/* 8. Governing Law & Jurisdiction */}
               <section className="space-y-2">
                 <h2 className="font-serif text-lg font-bold text-gray-900">
-                  7. Governing Law and Dispute Jurisdiction
+                  8. Governing Law and Dispute Jurisdiction
                 </h2>
                 <p>
                   These terms are governed by and construed in accordance with the laws of the Republic of India. Any legal dispute or claim arising out of your relationship with Himali Fresh shall fall under the exclusive jurisdiction of the competent civil courts at <strong>Siliguri, West Bengal, India</strong>.
                 </p>
               </section>
 
-              {/* 8. Contact Details */}
+              {/* 9. Contact Details */}
               <section className="space-y-2">
                 <h2 className="font-serif text-lg font-bold text-gray-900">
-                  8. Merchant &amp; Business Details
+                  9. Merchant &amp; Business Details
                 </h2>
                 <div className="p-4 rounded-xl border border-gray-100 bg-gray-50 text-xs space-y-1">
                   <p><strong>Business Name:</strong> Himali Fresh</p>

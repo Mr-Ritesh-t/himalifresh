@@ -198,7 +198,7 @@ export function Footer({ settings }: FooterProps) {
               Terms &amp; Conditions
             </Link>
             <Link href="/refund-policy" className="hover:text-white transition-colors">
-              Refund Policy
+              No Return &amp; Refund Policy
             </Link>
             <Link href="/cookie-policy" className="hover:text-white transition-colors">
               Cookie Policy

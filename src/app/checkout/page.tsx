@@ -578,7 +578,7 @@ export default function CheckoutPage() {
                   </Link>
                   , and{' '}
                   <Link href="/refund-policy" target="_blank" className="text-[#064B32] font-semibold underline">
-                    Refund Policy
+                    No Return &amp; Refund Policy (All Sales Final)
                   </Link>
                   .
                 </span>

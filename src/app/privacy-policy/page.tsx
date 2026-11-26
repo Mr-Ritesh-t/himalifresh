@@ -219,7 +219,7 @@ export default function PrivacyPolicyPage() {
                   Terms &amp; Conditions →
                 </Link>
                 <Link href="/refund-policy" className="text-[#064B32] font-semibold hover:underline">
-                  Refund &amp; Cancellation Policy →
+                  No Return &amp; Refund Policy →
                 </Link>
               </div>
             </div>

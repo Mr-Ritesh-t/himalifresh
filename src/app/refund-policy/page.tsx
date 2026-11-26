@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
-import { RefreshCw, CheckCircle2, AlertCircle, MessageSquare, ShieldCheck, Clock } from 'lucide-react';
+import { Ban, AlertCircle, ShieldAlert, CheckCircle2, MessageSquare, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Refund & Cancellation Policy | Himali Fresh',
-  description: 'Read our transparent cancellation, transit damage replacement, and refund policies for authentic Himalayan food products.',
+  title: 'No Return & No Refund Policy | Himali Fresh',
+  description: 'Strict No Return, No Replacement, and No Refund policy for consumable and perishable Himalayan food products.',
 };
 
 export default function RefundPolicyPage() {
@@ -23,113 +23,109 @@ export default function RefundPolicyPage() {
             
             {/* Header */}
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-[#064B32] mb-3">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Customer Satisfaction &amp; Transit Guarantee</span>
+              <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-300 px-3 py-1 text-xs font-semibold text-amber-900 mb-3">
+                <Ban className="h-3.5 w-3.5 text-amber-700" />
+                <span>All Sales Final • Consumable Food Products</span>
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-                Refund &amp; Cancellation Policy
+                No Return &amp; No Refund Policy
               </h1>
               <p className="text-xs text-gray-500 mt-2">
-                Effective Date: {lastUpdated} • Himali Fresh (Siliguri, West Bengal)
+                Last updated: {lastUpdated} • Himali Fresh (Siliguri, West Bengal, India)
+              </p>
+            </div>
+
+            {/* Prominent Warning Callout */}
+            <div className="rounded-2xl border-2 border-red-200 bg-red-50/80 p-5 sm:p-6 space-y-3">
+              <div className="flex items-center gap-2 text-red-900 font-serif font-bold text-base sm:text-lg">
+                <ShieldAlert className="h-5 w-5 text-red-600 shrink-0" />
+                <span>Strict No Replacement &amp; No Refund Policy</span>
+              </div>
+              <p className="text-xs sm:text-sm text-red-950 leading-relaxed font-medium">
+                Due to the perishable, consumable, and artisanal nature of our authentic Himalayan food items (including traditional pickles, wild Timur, organic spices, fermented foods, teas, and grains), <strong>Himali Fresh strictly enforces a NO RETURN, NO REPLACEMENT, and NO REFUND policy on all products once ordered and dispatched. All sales are final.</strong>
               </p>
             </div>
 
             <div className="space-y-6 text-sm text-gray-700 leading-relaxed">
               
-              {/* Overview */}
+              {/* 1. Why No Returns or Replacements */}
               <section className="space-y-3">
+                <h2 className="font-serif text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Ban className="h-4 w-4 text-[#064B32]" /> 1. No Returns &amp; No Replacements
+                </h2>
                 <p>
-                  At <strong>Himali Fresh</strong>, we take extreme pride in the quality, authenticity, and freshness of our Himalayan foods. Because our products include artisanal pickles in glass jars, wild dried spices, stone-ground flours, and perishables, we maintain clear, customer-friendly policies tailored for food items.
+                  In compliance with Food Safety and Standards Authority of India (FSSAI) hygiene and sanitary norms, food products cannot be returned, re-entered into inventory, or exchanged under any circumstances.
                 </p>
+                <ul className="list-disc pl-5 space-y-1.5 text-gray-600">
+                  <li><strong>Zero Returns:</strong> Once a food parcel has been dispatched from our facility, we cannot accept returns or handbacks.</li>
+                  <li><strong>Zero Replacements:</strong> We do not offer product replacements or exchanges for variations in personal taste, spice tolerance, colour/texture differences inherent to natural seasonal harvest, or changes of mind.</li>
+                  <li><strong>Courier Transit Delays:</strong> Courier transit times are handled by third-party logistics networks. Delays in courier transit do not qualify for replacement or return.</li>
+                </ul>
               </section>
 
-              {/* 1. Cancellation Policy */}
+              {/* 2. No Refunds Policy */}
               <section className="space-y-3 rounded-2xl bg-[#FAF5EB] p-5 border border-[#E8DFC8]">
-                <h2 className="font-serif text-lg font-bold text-[#064B32] flex items-center gap-2">
-                  <Clock className="h-4 w-4" /> 1. Order Cancellation Policy
+                <h2 className="font-serif text-lg font-bold text-[#064B32]">
+                  2. Strict No Refund Policy
                 </h2>
-                <ul className="list-disc pl-5 space-y-1.5 text-gray-700">
-                  <li><strong>Before Dispatch:</strong> You can cancel your order free of charge at any time before it leaves our Siliguri fulfillment center. Just send a WhatsApp message to <strong>+91 98320 78728</strong> or email <strong>riteshtayade68@gmail.com</strong> with your order number.</li>
-                  <li><strong>After Dispatch:</strong> Once an order is handed to our courier partner and a tracking AWB is generated, the shipment cannot be cancelled in transit due to the perishable nature of food packages.</li>
+                <p className="text-gray-800">
+                  We do not issue monetary refunds through any payment mode (UPI, bank transfer, debit/credit cards, or cash). Please ensure you review your cart items, weights, prices, and delivery addresses thoroughly before confirming your purchase.
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-gray-700">
+                  <li>No cash or online account refunds are permitted once an order is placed and confirmed.</li>
+                  <li>Parcels returned to origin (RTO) due to customer unavailability, incorrect delivery address, or refusal to accept delivery are not eligible for a refund.</li>
                 </ul>
               </section>
 
-              {/* 2. Transit Damage & Replacement Guarantee */}
+              {/* 3. Rigorous Quality & Packaging Check */}
               <section className="space-y-3">
                 <h2 className="font-serif text-lg font-bold text-gray-900">
-                  2. Transit Damage &amp; Breakage Guarantee
+                  3. Rigorous Quality Inspection Prior to Dispatch
                 </h2>
                 <p>
-                  We securely package all pickle jars, honey containers, and squashes with multi-layer bubble wrap and reinforced boxing. In the unlikely event that your parcel suffers transit damage or arrives leaking:
+                  To ensure complete satisfaction and eliminate issues before goods leave our custody:
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-3">
-                  <div className="p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-xs">
-                    <span className="font-bold text-[#064B32] block mb-1">Step 1: Notice within 48h</span>
-                    Take clear photos or a short video of the damaged item and outer packaging upon delivery.
-                  </div>
-                  <div className="p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-xs">
-                    <span className="font-bold text-[#064B32] block mb-1">Step 2: Message Us</span>
-                    Share the photos with your Order ID on WhatsApp at <strong>+91 98320 78728</strong>.
-                  </div>
-                  <div className="p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-xs">
-                    <span className="font-bold text-[#064B32] block mb-1">Step 3: Free Resolution</span>
-                    We will immediately dispatch a <strong>free replacement</strong> or issue a <strong>100% refund</strong>.
-                  </div>
-                </div>
-              </section>
-
-              {/* 3. Non-Returnable Items */}
-              <section className="space-y-3">
-                <h2 className="font-serif text-lg font-bold text-gray-900">
-                  3. Food Safety &amp; Returns Policy
-                </h2>
-                <p>
-                  In compliance with Food Safety and Standards Authority of India (FSSAI) guidelines, food products (once opened or tampered with by the customer) cannot be returned for resale. Returns are accepted exclusively if:
-                </p>
-                <ul className="list-disc pl-5 space-y-1 text-gray-600">
-                  <li>The product received is expired or past its best-before date.</li>
-                  <li>The seal is broken prior to delivery.</li>
-                  <li>An incorrect item was delivered compared to your invoice.</li>
+                <ul className="list-disc pl-5 space-y-1.5 text-gray-600">
+                  <li>Every jar, container, and pouch undergoes rigorous manual batch verification for freshness and seal integrity.</li>
+                  <li>Glass containers and liquid squashes are wrapped in heavy multi-layer air-bubble cushioning and sturdy cardboard outer boxes to withstand long-distance shipping.</li>
                 </ul>
               </section>
 
-              {/* 4. Refund Timeline & Mode */}
+              {/* 4. Cancellation Before Dispatch Only */}
               <section className="space-y-3">
-                <h2 className="font-serif text-lg font-bold text-gray-900">
-                  4. Refund Processing &amp; Timeline
+                <h2 className="font-serif text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-600" /> 4. Order Cancellation (Before Dispatch Only)
                 </h2>
                 <p>
-                  When a refund is approved by our customer care team:
+                  You may only cancel your order if the package has <strong>not yet been dispatched</strong> from our Siliguri hub.
                 </p>
-                <ul className="list-disc pl-5 space-y-1 text-gray-600">
-                  <li><strong>UPI / Net Banking:</strong> Refund credited directly to your bank account or UPI ID within <strong>2 to 4 business days</strong>.</li>
-                  <li><strong>Cash on Delivery Orders:</strong> Refund transferred to your verified UPI VPA or NEFT bank account.</li>
-                  <li><strong>Store Credit Option:</strong> If you prefer, we can also issue immediate store credit for your next order.</li>
+                <ul className="list-disc pl-5 space-y-1.5 text-gray-600">
+                  <li>To request pre-dispatch cancellation, message us immediately on WhatsApp at <strong>+91 98320 78728</strong> with your Order Number.</li>
+                  <li>Once an order has been packed, handed over to courier personnel, or assigned a tracking AWB number, it <strong>cannot</strong> be cancelled, recalled, or refunded.</li>
                 </ul>
               </section>
 
               {/* 5. Contact Support */}
-              <section className="space-y-3 rounded-2xl bg-emerald-50/60 p-5 border border-emerald-200">
-                <h2 className="font-serif text-lg font-bold text-[#064B32] flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" /> 5. Need Immediate Assistance?
+              <section className="space-y-3 rounded-2xl bg-gray-50 p-5 border border-gray-200">
+                <h2 className="font-serif text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-[#064B32]" /> 5. Questions Before Ordering?
                 </h2>
-                <p className="text-gray-700 text-xs sm:text-sm">
-                  Our customer support team is based directly at our Siliguri store and ready to help:
+                <p className="text-gray-600 text-xs sm:text-sm">
+                  If you have questions about specific product ingredients, spice heat levels, shelf life, or delivery timelines to your city, our team is happy to assist you before you place your order:
                 </p>
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <a
-                    href="https://wa.me/919832078728?text=Hi%20Himali%20Fresh%2C%20I%20have%20an%20inquiry%20regarding%20my%20order%20or%20refund."
+                    href="https://wa.me/919832078728?text=Hi%20Himali%20Fresh%2C%20I%20have%20a%20question%20before%20placing%20my%20order."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-full bg-[#064B32] px-4 py-2 text-xs font-semibold text-white hover:bg-[#073D2B] transition-colors"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
-                    WhatsApp Support (+91 98320 78728)
+                    WhatsApp Pre-Order Assistance (+91 98320 78728)
                   </a>
                   <a
                     href="mailto:riteshtayade68@gmail.com"
-                    className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+                    className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
                   >
                     Email: riteshtayade68@gmail.com
                   </a>
@@ -141,11 +137,11 @@ export default function RefundPolicyPage() {
             <div className="pt-6 border-t border-[#E8DFC8] flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
               <span>Himali Fresh • Dagapur, Siliguri, West Bengal</span>
               <div className="flex items-center gap-4">
-                <Link href="/privacy-policy" className="text-[#064B32] font-semibold hover:underline">
-                  Privacy Policy →
-                </Link>
                 <Link href="/terms" className="text-[#064B32] font-semibold hover:underline">
                   Terms &amp; Conditions →
+                </Link>
+                <Link href="/privacy-policy" className="text-[#064B32] font-semibold hover:underline">
+                  Privacy Policy →
                 </Link>
               </div>
             </div>
