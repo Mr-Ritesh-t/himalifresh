@@ -57,25 +57,32 @@ export async function PATCH(
 
     const previousStatus = currentOrder.status;
 
-    const updatedOrder = await prisma.$transaction(async (tx) => {
-      const order = await tx.order.update({
-        where: { id },
-        data: { status },
-        include: { items: true, statusHistory: true, user: true },
-      });
-
-      await tx.orderStatusHistory.create({
-        data: {
-          orderId: id,
-          previousStatus,
-          newStatus: status,
-          changedBy: session.name || session.email || 'Admin',
-          notes: notes || `Status changed from ${previousStatus} to ${status}`,
-        },
-      });
-
-      return order;
+    // 1. Update order status without relations (avoids Prisma implicit transactions unsupported in Neon HTTP)
+    await prisma.order.update({
+      where: { id },
+      data: { status },
     });
+
+    // 2. Record status change in status history
+    await prisma.orderStatusHistory.create({
+      data: {
+        orderId: id,
+        previousStatus,
+        newStatus: status,
+        changedBy: session.name || session.email || 'Admin',
+        notes: notes || `Status changed from ${previousStatus} to ${status}`,
+      },
+    });
+
+    // 3. Query full updated order with relations for Brevo email and response
+    const updatedOrder = await prisma.order.findUnique({
+      where: { id },
+      include: { items: true, statusHistory: true, user: true },
+    });
+
+    if (!updatedOrder) {
+      return NextResponse.json({ success: false, error: 'Order not found after update' }, { status: 404 });
+    }
 
     // Send Brevo email notification to customer if status changed
     if (status !== previousStatus) {
@@ -98,6 +105,10 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, order: updatedOrder });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: 'Failed to update order status' }, { status: 500 });
+    console.error('[Admin Order Update Error]:', error);
+    return NextResponse.json(
+      { success: false, error: error?.message || 'Failed to update order status' },
+      { status: 500 }
+    );
   }
 }

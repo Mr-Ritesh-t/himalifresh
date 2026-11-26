@@ -62,7 +62,7 @@ export default function AdminOrderDetailsPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        toast.error('Failed to update status');
+        toast.error(data.error || 'Failed to update status');
         setUpdating(false);
         return;
       }
