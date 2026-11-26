@@ -20,7 +20,7 @@
 - **Next.js 15 App Router & React 19:** Server Components by default with client components for interactive cart, filters, and admin forms.
 - **Official Brand Design System:** Incorporates the official circular golden crest logo, Himalayan panoramic banner, and custom colour palette (`#064B32` Forest Green, `#0B6B43` Secondary Green, `#E9BE54` Himalayan Gold, `#FAF8F0` Warm Cream).
 - **Zero-Trust Pricing Architecture:** Client cart prices are never trusted. All totals, item availability, and prices are recalculated strictly on the server against the database.
-- **Database & Prisma ORM:** Clean database models supporting SQLite (zero-config local dev & tests) and PostgreSQL (for production).
+- **Database & Prisma ORM:** Clean database models running on high-performance Neon Serverless PostgreSQL with connection pooling.
 - **Secure Admin Authentication:** Cryptographically signed JWT tokens stored in `httpOnly`, `sameSite: lax`, `secure` cookies with bcrypt password hashing.
 - **Responsive Mobile-First UX:** Tailored for 360px up to 1440px displays, including a dedicated mobile bottom navigation bar and sticky header.
 - **Built-in Test Suite:** Vitest unit test suite covering utilities, WhatsApp payload formatting, input validation, anti-tampering guards, and JWT auth.
@@ -88,6 +88,5 @@ npm run dev
 
 Visit [http://localhost:3000](http://localhost:3000) for the public storefront and [http://localhost:3000/admin](http://localhost:3000/admin) for the owner admin console.
 
-**Default Admin Credentials:**
-- Email: `admin@himalifresh.com`
-- Password: `HimaliFresh@2026!`
+**Administrator Access:**
+Access the administrator portal at `/admin/login`. Administrator accounts are managed securely via the database seed script or created directly by an existing Super Administrator in the Admin Console. Never share master administrator credentials in public repositories.

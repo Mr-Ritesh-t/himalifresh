@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, Eye, EyeOff, ShieldCheck, AlertCircle, ArrowLeft, KeyRound } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, ShieldCheck, AlertCircle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminLoginPage() {
@@ -44,12 +44,6 @@ export default function AdminLoginPage() {
       toast.error('Network error');
       setLoading(false);
     }
-  };
-
-  const handleFillDemo = () => {
-    setEmail('admin@himalifresh.com');
-    setPassword('HimaliFresh@2026!');
-    toast.info('Demo credentials populated');
   };
 
   return (
@@ -177,21 +171,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Helper */}
-          <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between text-xs">
-            <span className="text-gray-600 font-mono text-[11px]">
-              admin@himalifresh.com
-            </span>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-[#064B32] hover:text-[#0B6B43] hover:underline"
-            >
-              <KeyRound className="h-3 w-3" />
-              <span>Autofill Demo</span>
-            </button>
-          </div>
         </div>
 
         {/* Footer info */}

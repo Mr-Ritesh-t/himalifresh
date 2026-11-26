@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import { put } from '@vercel/blob';
 import { getTigrisAwsClient, getTigrisObjectUrl, isTigrisConfigured } from '@/lib/tigris';
 
 export async function POST(request: NextRequest) {
@@ -91,27 +90,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 2. Fallback: Vercel Blob (if configured)
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const blob = await put(`products/${filename}`, buffer, {
-        access: 'public',
-        contentType,
-      });
-
-      return NextResponse.json({
-        success: true,
-        url: blob.url,
-        filename,
-      });
-    }
-
-    // If running in production (e.g. Vercel) without BLOB_READ_WRITE_TOKEN
-    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    // In production, Tigris must be configured
+    if (process.env.NODE_ENV === 'production') {
       return NextResponse.json(
         {
           success: false,
-          error:
-            'Blob Storage token not found. Please Redeploy on Vercel to activate your himalifresh-blob store.',
+          error: 'Tigris Object Storage is not configured. Please check TIGRIS_STORAGE_* variables.',
         },
         { status: 500 }
       );

@@ -85,19 +85,7 @@ export async function deleteStoredImage(url?: string | null): Promise<boolean> {
     }
   }
 
-  // 3. Vercel Blob (if configured)
-  if (url.includes('vercel-storage.com') && process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      const { del } = await import('@vercel/blob');
-      await del(url);
-      return true;
-    } catch (err) {
-      console.warn(`[Vercel Blob] Failed to delete blob "${url}":`, err);
-      return false;
-    }
-  }
-
-  // 4. Local uploads folder (/uploads/...) when running in Node.js runtime
+  // 3. Local uploads folder (/uploads/...) when running in Node.js runtime
   if (url.startsWith('/uploads/') && typeof process !== 'undefined' && process.release?.name === 'node') {
     try {
       const { unlink } = await import('fs/promises');

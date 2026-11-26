@@ -72,6 +72,5 @@ The application is now running at:
 - **Public Storefront:** [http://localhost:3000](http://localhost:3000)
 - **Admin Dashboard:** [http://localhost:3000/admin](http://localhost:3000/admin)
 
-**Initial Admin Credentials:**
-- Email: `admin@himalifresh.com`
-- Password: `HimaliFresh@2026!`
+**Administrator Access:**
+Access the administrator portal at `/admin/login`. Master administrator credentials are provisioned during database initialization or by an existing Super Administrator. Keep administrator credentials confidential.

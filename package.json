@@ -11,8 +11,6 @@
     "prisma:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:postgres": "node scripts/switch-db.js postgres",
-    "db:sqlite": "node scripts/switch-db.js sqlite",
     "test": "vitest run",
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
@@ -21,9 +19,6 @@
     "@opennextjs/cloudflare": "^1.20.19",
     "@prisma/adapter-neon": "^6.19.3",
     "@prisma/client": "^6.4.1",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/blob": "^2.9.0",
-    "@vercel/speed-insights": "^2.1.0",
     "aws4fetch": "^1.0.20",
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
