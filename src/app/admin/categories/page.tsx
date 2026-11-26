@@ -81,6 +81,14 @@ export default function AdminCategoriesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Client-side 5MB size limit check
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      toast.error(`Image is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum allowed size is 5MB.`);
+      e.target.value = '';
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);

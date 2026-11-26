@@ -10,7 +10,7 @@ import { CategoryCard } from '@/components/ui/CategoryCard';
 import { TrustBadges } from '@/components/ui/TrustBadges';
 import { ArrowRight, ShoppingCart, Play, Star, MessageSquare } from 'lucide-react';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 async function getHomepageData() {
   try {

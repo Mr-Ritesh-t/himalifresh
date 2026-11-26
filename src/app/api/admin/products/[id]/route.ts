@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { productSchema } from '@/lib/validations';
@@ -102,6 +103,16 @@ export async function PATCH(
       },
     });
 
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/shop');
+      revalidatePath('/shop/[category]', 'page');
+      revalidatePath('/product/[slug]', 'page');
+      revalidatePath('/admin/products');
+    } catch (e) {
+      // Non-blocking
+    }
+
     return NextResponse.json({ success: true, product });
   } catch (error: any) {
     console.error('Error updating product:', error);
@@ -125,6 +136,15 @@ export async function DELETE(
     await prisma.product.delete({
       where: { id },
     });
+
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/shop');
+      revalidatePath('/shop/[category]', 'page');
+      revalidatePath('/admin/products');
+    } catch (e) {
+      // Non-blocking
+    }
 
     return NextResponse.json({ success: true, message: 'Product deleted successfully' });
   } catch (error: any) {

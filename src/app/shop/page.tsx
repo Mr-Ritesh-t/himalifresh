@@ -8,6 +8,8 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { ShopSort } from '@/components/shop/ShopSort';
 import { Search, SlidersHorizontal, ArrowUpDown, ChevronRight, X } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 interface ShopPageProps {
   searchParams: Promise<{
     q?: string;

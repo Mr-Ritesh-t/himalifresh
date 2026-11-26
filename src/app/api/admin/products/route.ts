@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { productSchema } from '@/lib/validations';
@@ -115,6 +116,15 @@ export async function POST(request: NextRequest) {
         images: { orderBy: { displayOrder: 'asc' } },
       },
     });
+
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/shop');
+      revalidatePath('/shop/[category]', 'page');
+      revalidatePath('/admin/products');
+    } catch (e) {
+      // Non-blocking
+    }
 
     return NextResponse.json({ success: true, product });
   } catch (error: any) {

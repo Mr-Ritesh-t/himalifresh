@@ -38,10 +38,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Max 10MB to accommodate high-res camera captures
-    if (file.size > 10 * 1024 * 1024) {
+    // Strict size limit: 5MB maximum to ensure fast page loads and prevent storage bloat
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { success: false, error: 'File size exceeds limit of 10MB.' },
+        {
+          success: false,
+          error: `File size exceeds the 5MB limit (selected: ${(file.size / (1024 * 1024)).toFixed(1)}MB). Please upload an image under 5MB.`,
+        },
         { status: 400 }
       );
     }

@@ -80,6 +80,14 @@ export default function AdminEditProductPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Client-side 5MB size limit check
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_SIZE) {
+      toast.error(`Image is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum allowed size is 5MB.`);
+      e.target.value = '';
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -116,6 +124,14 @@ export default function AdminEditProductPage() {
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        // Client-side 5MB size limit check
+        const MAX_SIZE = 5 * 1024 * 1024;
+        if (file.size > MAX_SIZE) {
+          toast.error(`"${file.name}" exceeds the 5MB limit (${(file.size / (1024 * 1024)).toFixed(1)}MB) and was skipped.`);
+          continue;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -177,6 +193,7 @@ export default function AdminEditProductPage() {
 
       toast.success('Product updated successfully');
       router.push('/admin/products');
+      router.refresh();
     } catch (err) {
       setError('A network error occurred');
       toast.error('Network error');
