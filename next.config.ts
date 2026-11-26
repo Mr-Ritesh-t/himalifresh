@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   // Enable modern high-performance response compression
   compress: true,
 
-  // Image optimization with next-gen AVIF & WebP
+  // Image optimization: unoptimized so direct /api/images & /images URLs work on Cloudflare Workers
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2592000, // 30 days image cache
     remotePatterns: [
