@@ -8,6 +8,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "observability": {
+    "enabled": true
+  },
   "vars": {
     "NEXT_PUBLIC_BUSINESS_PHONE": "+91 98320 78728",
     "NEXT_PUBLIC_WHATSAPP_NUMBER": "919832078728",
