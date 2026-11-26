@@ -68,7 +68,14 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={() => product.isAvailable && addToCart(product)}
           disabled={!product.isAvailable}
-          className={`mt-2 flex items-center justify-center gap-1 w-full rounded-full border py-1 sm:py-1.5 px-1 sm:px-2 text-[10px] sm:text-xs font-semibold transition-all duration-200 ${
+          aria-label={
+            !product.isAvailable
+              ? `${product.name} is out of stock`
+              : existingInCart
+              ? `${product.name} in cart, count ${existingInCart.quantity}`
+              : `Add ${product.name} to cart`
+          }
+          className={`mt-2 flex items-center justify-center gap-1 w-full rounded-full border py-1 sm:py-1.5 px-1 sm:px-2 text-[10px] sm:text-xs font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#064B32] ${
             !product.isAvailable
               ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
               : existingInCart

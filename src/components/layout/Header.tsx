@@ -46,8 +46,8 @@ export function Header({ settings }: HeaderProps) {
   const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   const phone = settings?.phone || '+91 98320 78728';
-  const email = settings?.email || 'info@himalifresh1.com';
-  const announcement = settings?.announcement || 'Delivering Authentic Himalayan Products';
+  const email = settings?.email || 'riteshtayade68@gmail.com';
+  const announcement = settings?.announcement || 'Delivering Authentic Himalayan Products from Siliguri';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
 
   // Live search debounce

@@ -189,13 +189,19 @@ export function Footer({ settings }: FooterProps) {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-200/60">
-          <p>© {new Date().getFullYear()} Himali Fresh. All rights reserved. Siliguri, West Bengal.</p>
-          <div className="flex items-center gap-6">
+          <p>© {new Date().getFullYear()} Himali Fresh. All rights reserved. Dagapur, Siliguri, West Bengal.</p>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
-              Terms & Conditions
+              Terms &amp; Conditions
+            </Link>
+            <Link href="/refund-policy" className="hover:text-white transition-colors">
+              Refund Policy
+            </Link>
+            <Link href="/cookie-policy" className="hover:text-white transition-colors">
+              Cookie Policy
             </Link>
           </div>
         </div>

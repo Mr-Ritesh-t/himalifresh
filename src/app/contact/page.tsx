@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
+import Link from 'next/link';
 import { Phone, Mail, MapPin, MessageSquare, Send, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,6 +12,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -29,8 +31,14 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (!consent) {
+      setError('Please provide consent for us to respond to your enquiry.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch('/api/contact', {
@@ -278,6 +286,24 @@ export default function ContactPage() {
                       className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
                     />
                   </div>
+
+                  {/* Consent Checkbox */}
+                  <label className="flex items-start gap-2.5 text-xs text-gray-700 cursor-pointer select-none rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-himali-primary focus:ring-himali-primary accent-[#064B32]"
+                    />
+                    <span className="leading-tight">
+                      I consent to Himali Fresh contacting me via WhatsApp, phone, or email regarding this enquiry in accordance with the{' '}
+                      <Link href="/privacy-policy" target="_blank" className="text-himali-green font-semibold underline">
+                        Privacy Policy
+                      </Link>
+                      .
+                    </span>
+                  </label>
 
                   <button
                     type="submit"

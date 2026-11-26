@@ -4,6 +4,7 @@ import './globals.css';
 import { Providers } from '@/components/Providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { CookieConsent } from '@/components/ui/CookieConsent';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -76,7 +77,17 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className="min-h-screen flex flex-col justify-between selection:bg-himali-gold selection:text-himali-dark">
-        <Providers>{children}</Providers>
+        {/* Skip to content link for keyboard and screen-reader accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-[#064B32] focus:text-white focus:px-4 focus:py-2 focus:shadow-lg focus:outline-none"
+        >
+          Skip to main content
+        </a>
+        <Providers>
+          <div id="main-content">{children}</div>
+        </Providers>
+        <CookieConsent />
         <SpeedInsights />
         <Analytics />
       </body>

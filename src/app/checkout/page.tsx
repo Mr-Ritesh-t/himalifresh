@@ -40,6 +40,7 @@ export default function CheckoutPage() {
     landmark: '',
     instructions: '',
   });
+  const [consentAgreed, setConsentAgreed] = useState(false);
 
   useEffect(() => {
     async function fetchMe() {
@@ -168,6 +169,11 @@ export default function CheckoutPage() {
 
     if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       toast.error('Please enter a valid email address or leave it blank');
+      return;
+    }
+
+    if (!consentAgreed) {
+      toast.error('Please confirm that you are at least 18 years old and accept our Terms and Policies.');
       return;
     }
 
@@ -551,6 +557,32 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               </div>
+
+              {/* Age and Policy Consent Checkbox */}
+              <label className="flex items-start gap-2.5 text-xs text-gray-700 cursor-pointer select-none rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+                <input
+                  type="checkbox"
+                  required
+                  checked={consentAgreed}
+                  onChange={(e) => setConsentAgreed(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-himali-green focus:ring-himali-green accent-[#064B32]"
+                />
+                <span className="leading-tight">
+                  I confirm I am <strong>18 years or older</strong>, and agree to Himali Fresh&apos;s{' '}
+                  <Link href="/terms" target="_blank" className="text-[#064B32] font-semibold underline">
+                    Terms &amp; Conditions
+                  </Link>
+                  ,{' '}
+                  <Link href="/privacy-policy" target="_blank" className="text-[#064B32] font-semibold underline">
+                    Privacy Policy
+                  </Link>
+                  , and{' '}
+                  <Link href="/refund-policy" target="_blank" className="text-[#064B32] font-semibold underline">
+                    Refund Policy
+                  </Link>
+                  .
+                </span>
+              </label>
 
               <button
                 type="submit"

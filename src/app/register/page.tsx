@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -43,6 +44,11 @@ export default function RegisterPage() {
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
+      return;
+    }
+
+    if (!agreeTerms) {
+      setError('Please confirm that you are 18+ and agree to our Terms of Service and Privacy Policy.');
       return;
     }
 
@@ -215,6 +221,28 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+
+            {/* Age & Legal Terms Consent */}
+            <label className="flex items-start gap-2.5 text-xs text-gray-700 cursor-pointer select-none rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+              <input
+                type="checkbox"
+                required
+                checked={agreeTerms}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-[#064B32] focus:ring-[#064B32] accent-[#064B32]"
+              />
+              <span className="leading-tight">
+                I confirm I am <strong>18 years or older</strong>, and agree to Himali Fresh&apos;s{' '}
+                <Link href="/terms" target="_blank" className="text-[#064B32] font-semibold underline">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy-policy" target="_blank" className="text-[#064B32] font-semibold underline">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
 
             <button
               type="submit"

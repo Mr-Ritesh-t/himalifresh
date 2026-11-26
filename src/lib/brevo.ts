@@ -145,10 +145,14 @@ function getEmailLayout(title: string, bodyHtml: string): string {
     </div>
     <div class="footer">
       <p style="margin: 0 0 8px 0;"><strong>Himali Fresh</strong> • Siliguri, West Bengal, India</p>
-      <p style="margin: 0 0 12px 0;">Pure and authentic Himalayan food products, pickles, mountain teas, and spices.</p>
-      <p style="margin: 0;">
-        <a href="https://wa.me/${whatsappNumber}" style="color: #064B32; text-decoration: underline; margin-right: 12px;">WhatsApp Support</a> • 
-        <a href="${appUrl}" style="color: #064B32; text-decoration: underline; margin-left: 12px;">Visit Website</a>
+      <p style="margin: 0 0 10px 0;">Pure and authentic Himalayan food products, pickles, mountain teas, and spices.</p>
+      <p style="margin: 0 0 12px 0;">
+        <a href="https://wa.me/${whatsappNumber}" style="color: #064B32; text-decoration: underline; margin-right: 8px;">WhatsApp Support</a> • 
+        <a href="${appUrl}" style="color: #064B32; text-decoration: underline; margin-right: 8px; margin-left: 8px;">Visit Website</a> •
+        <a href="${appUrl}/privacy-policy" style="color: #064B32; text-decoration: underline; margin-left: 8px;">Privacy Policy</a>
+      </p>
+      <p style="margin: 12px 0 0 0; font-size: 11px; color: #94A3B8; line-height: 1.4;">
+        This is a transactional communication related to your order or enquiry. We respect your privacy in accordance with DPDP Act 2023. To manage your communication preferences or request personal data deletion, email <a href="mailto:riteshtayade68@gmail.com" style="color: #64748B;">riteshtayade68@gmail.com</a>.
       </p>
     </div>
   </div>
