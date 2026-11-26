@@ -334,3 +334,23 @@ describe('7. JWT Role Isolation & Auth Security', () => {
     expect(await verifyUserToken(adminToken)).toBeNull();
   });
 });
+
+describe('8. Storage Media Pruning & Key Extraction', () => {
+  it('correctly extracts Tigris keys from uploaded image paths and safeguards static assets', async () => {
+    const { extractTigrisKey, deleteStoredImage } = await import('@/lib/tigris');
+
+    // Uploaded product and category URLs
+    expect(extractTigrisKey('/api/images/products/mushroom-12345.jpg')).toBe('products/mushroom-12345.jpg');
+    expect(extractTigrisKey('/api/images/categories/spices-67890.png')).toBe('categories/spices-67890.png');
+    expect(extractTigrisKey('https://t3.storage.dev/himalifresh-images/products/tea-pack.webp')).toBe('products/tea-pack.webp');
+
+    // Static repository assets must return null and never be deleted
+    expect(extractTigrisKey('/images/herobanner.png')).toBeNull();
+    expect(extractTigrisKey('/images/logo.jpg')).toBeNull();
+    expect(extractTigrisKey('')).toBeNull();
+
+    // deleteStoredImage should safely return false without throwing on static assets
+    const result = await deleteStoredImage('/images/herobanner.png');
+    expect(result).toBe(false);
+  });
+});

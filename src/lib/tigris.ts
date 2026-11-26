@@ -36,3 +36,80 @@ export function getTigrisAwsClient(): AwsClient {
     region: 'auto',
   });
 }
+
+/**
+ * Extracts the storage object key (e.g. "products/photo-123.jpg" or "categories/icon-456.png")
+ * from an API proxy URL or direct S3/Tigris URL. Returns null for static repository assets.
+ */
+export function extractTigrisKey(urlOrPath: string): string | null {
+  if (!urlOrPath || typeof urlOrPath !== 'string') return null;
+
+  // Never delete static repository assets (e.g. /images/...)
+  if (urlOrPath.startsWith('/images/')) {
+    return null;
+  }
+
+  // Pattern 1: Proxied API URL (/api/images/products/... or /api/images/categories/...)
+  const apiMatch = urlOrPath.match(/\/api\/images\/((?:products|categories)\/[^?#]+)/);
+  if (apiMatch) return apiMatch[1];
+
+  // Pattern 2: S3 / Tigris direct URL endpoint/bucket/(products|categories)/filename.ext
+  const s3Match = urlOrPath.match(/(?:products|categories)\/[^?#/]+\.(?:jpe?g|png|webp|heic|heif)/i);
+  if (s3Match) return s3Match[0];
+
+  return null;
+}
+
+/**
+ * Deletes an uploaded image from storage (Tigris Object Storage, Vercel Blob, or local uploads).
+ * Static repository assets located in /images/ are safeguarded and never deleted.
+ */
+export async function deleteStoredImage(url?: string | null): Promise<boolean> {
+  if (!url || typeof url !== 'string') return false;
+
+  // 1. Safeguard repository assets (e.g. /images/herobanner.png, /images/logo.jpg)
+  if (url.startsWith('/images/')) {
+    return false;
+  }
+
+  // 2. Tigris Object Storage
+  const tigrisKey = extractTigrisKey(url);
+  if (tigrisKey && isTigrisConfigured()) {
+    try {
+      const aws = getTigrisAwsClient();
+      const res = await aws.fetch(getTigrisObjectUrl(tigrisKey), { method: 'DELETE' });
+      return res.ok || res.status === 204 || res.status === 404;
+    } catch (err) {
+      console.warn(`[Tigris] Failed to delete object "${tigrisKey}":`, err);
+      return false;
+    }
+  }
+
+  // 3. Vercel Blob (if configured)
+  if (url.includes('vercel-storage.com') && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const { del } = await import('@vercel/blob');
+      await del(url);
+      return true;
+    } catch (err) {
+      console.warn(`[Vercel Blob] Failed to delete blob "${url}":`, err);
+      return false;
+    }
+  }
+
+  // 4. Local uploads folder (/uploads/...) when running in Node.js runtime
+  if (url.startsWith('/uploads/') && typeof process !== 'undefined' && process.release?.name === 'node') {
+    try {
+      const { unlink } = await import('fs/promises');
+      const path = await import('path');
+      const localPath = path.join(process.cwd(), 'public', url);
+      await unlink(localPath).catch(() => {});
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+

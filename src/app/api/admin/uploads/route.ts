@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
       else if (file.type?.includes('webp')) ext = '.webp';
       else ext = '.jpg';
     }
+    const folder = (formData.get('folder') as string) === 'categories' ? 'categories' : 'products';
     const cleanBaseName = path.basename(file.name, ext).replace(/[^\w-]/g, '') || 'photo';
     const filename = `${cleanBaseName}-${Date.now()}${ext.toLowerCase()}`;
 
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
     // 1. Tigris Object Storage (Private bucket + cached /api/images/ proxy)
     if (isTigrisConfigured()) {
       const aws = getTigrisAwsClient();
-      const key = `products/${filename}`;
+      const key = `${folder}/${filename}`;
 
       const uploadRes = await aws.fetch(getTigrisObjectUrl(key), {
         method: 'PUT',

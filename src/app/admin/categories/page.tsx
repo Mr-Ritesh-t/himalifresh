@@ -92,6 +92,7 @@ export default function AdminCategoriesPage() {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', 'categories');
 
     try {
       const res = await fetch('/api/admin/uploads', {

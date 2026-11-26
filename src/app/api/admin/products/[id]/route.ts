@@ -4,6 +4,7 @@ import { getAdminSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { productSchema } from '@/lib/validations';
 import { slugify } from '@/lib/utils';
+import { deleteStoredImage } from '@/lib/tigris';
 
 export async function GET(
   request: NextRequest,
@@ -132,10 +133,36 @@ export async function DELETE(
   try {
     const { id } = await context.params;
 
-    // Delete product (OrderItem has onDelete: SetNull & preserves snapshots; ProductImage has onDelete: Cascade)
+    // 1. Fetch product with gallery images to identify files that must be pruned from storage
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: { images: true },
+    });
+
+    if (!product) {
+      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+
+    // Collect all stored image URLs (main cover + all gallery images)
+    const imagesToDelete: string[] = [];
+    if (product.mainImageUrl) {
+      imagesToDelete.push(product.mainImageUrl);
+    }
+    if (Array.isArray(product.images)) {
+      product.images.forEach((img) => {
+        if (img.imageUrl) imagesToDelete.push(img.imageUrl);
+      });
+    }
+
+    // 2. Delete product record from database (Cascade deletes ProductImage records, SetNull preserves order snapshots)
     await prisma.product.delete({
       where: { id },
     });
+
+    // 3. Prune uploaded media from Tigris / object storage to free up quota
+    if (imagesToDelete.length > 0) {
+      await Promise.allSettled(imagesToDelete.map((url) => deleteStoredImage(url)));
+    }
 
     try {
       revalidatePath('/', 'layout');
@@ -146,7 +173,7 @@ export async function DELETE(
       // Non-blocking
     }
 
-    return NextResponse.json({ success: true, message: 'Product deleted successfully' });
+    return NextResponse.json({ success: true, message: 'Product and associated storage media deleted successfully' });
   } catch (error: any) {
     console.error('Error deleting product:', error);
     return NextResponse.json({ success: false, error: 'Failed to delete product' }, { status: 500 });
