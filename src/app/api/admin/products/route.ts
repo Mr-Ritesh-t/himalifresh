@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     const { galleryImages, ...productFields } = data;
 
-    const product = await prisma.product.create({
+    const createdProduct = await prisma.product.create({
       data: {
         name: productFields.name,
         slug: finalSlug,
@@ -91,15 +91,21 @@ export async function POST(request: NextRequest) {
         isAvailable: productFields.isAvailable,
         isFeatured: productFields.isFeatured,
         isActive: productFields.isActive,
-        images: galleryImages && galleryImages.length > 0
-          ? {
-              create: galleryImages.map((url, idx) => ({
-                imageUrl: url,
-                displayOrder: idx,
-              })),
-            }
-          : undefined,
       },
+    });
+
+    if (galleryImages && galleryImages.length > 0) {
+      await prisma.productImage.createMany({
+        data: galleryImages.map((url, idx) => ({
+          productId: createdProduct.id,
+          imageUrl: url,
+          displayOrder: idx,
+        })),
+      });
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: createdProduct.id },
       include: {
         category: true,
         images: { orderBy: { displayOrder: 'asc' } },

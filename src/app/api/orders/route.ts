@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
     // 5. Check if user is logged in
     const userSession = await getUserSession();
 
-    // 6. Save order (nested create is atomic)
-    const order = await prisma.order.create({
+    // 6. Save order & related records sequentially (compatible with stateless Neon HTTP adapter)
+    const createdOrder = await prisma.order.create({
       data: {
         orderNumber,
         userId: userSession?.id || null,
@@ -135,22 +135,31 @@ export async function POST(request: NextRequest) {
           : (email && !userSession ? `[Email: ${email}]` : null),
         totalAmount: calculatedTotal,
         status: 'NEW',
-        items: {
-          create: orderItemsData,
-        },
-        statusHistory: {
-          create: {
-            previousStatus: 'NONE',
-            newStatus: 'NEW',
-            changedBy: 'System / Customer Checkout',
-            notes: 'Order enquiry created via website checkout',
-          },
-        },
-      },
-      include: {
-        items: true,
       },
     });
+
+    await Promise.all([
+      prisma.orderItem.createMany({
+        data: orderItemsData.map((item) => ({
+          ...item,
+          orderId: createdOrder.id,
+        })),
+      }),
+      prisma.orderStatusHistory.create({
+        data: {
+          orderId: createdOrder.id,
+          previousStatus: 'NONE',
+          newStatus: 'NEW',
+          changedBy: 'System / Customer Checkout',
+          notes: 'Order enquiry created via website checkout',
+        },
+      }),
+    ]);
+
+    const order = {
+      ...createdOrder,
+      items: orderItemsData,
+    };
 
     // 6. Trigger Brevo Transactional Email Notifications
     const customerEmail = email || userSession?.email || null;
