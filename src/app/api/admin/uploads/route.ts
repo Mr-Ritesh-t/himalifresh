@@ -3,8 +3,7 @@ import { getAdminSession } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { put } from '@vercel/blob';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getTigrisClient, getTigrisConfig, isTigrisConfigured } from '@/lib/tigris';
+import { getTigrisAwsClient, getTigrisObjectUrl, isTigrisConfigured } from '@/lib/tigris';
 
 export async function POST(request: NextRequest) {
   const session = await getAdminSession();
@@ -64,18 +63,21 @@ export async function POST(request: NextRequest) {
 
     // 1. Tigris Object Storage (Private bucket + cached /api/images/ proxy)
     if (isTigrisConfigured()) {
-      const { bucket } = getTigrisConfig();
-      const s3 = getTigrisClient();
-
+      const aws = getTigrisAwsClient();
       const key = `products/${filename}`;
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          Body: buffer,
-          ContentType: contentType,
-        })
-      );
+
+      const uploadRes = await aws.fetch(getTigrisObjectUrl(key), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': contentType,
+        },
+        body: bytes,
+      });
+
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        throw new Error(`Tigris upload failed (${uploadRes.status}): ${errText}`);
+      }
 
       return NextResponse.json({
         success: true,

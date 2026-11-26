@@ -40,3 +40,5 @@ dev.db-wal
 dev.db-shm
 .neon
 *.pptx
+.open-next/
+.wrangler/

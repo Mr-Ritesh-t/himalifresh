@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getTigrisClient, getTigrisConfig, isTigrisConfigured } from '@/lib/tigris';
+import { getTigrisAwsClient, getTigrisObjectUrl, isTigrisConfigured } from '@/lib/tigris';
 
 export async function GET(
   _request: NextRequest,
@@ -24,34 +23,28 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid image key' }, { status: 400 });
     }
 
-    const { bucket } = getTigrisConfig();
-    const s3 = getTigrisClient();
+    const aws = getTigrisAwsClient();
+    const res = await aws.fetch(getTigrisObjectUrl(objectKey), { method: 'GET' });
 
-    const response = await s3.send(
-      new GetObjectCommand({
-        Bucket: bucket,
-        Key: objectKey,
-      })
-    );
-
-    if (!response.Body) {
+    if (res.status === 404) {
       return NextResponse.json({ error: 'Image not found' }, { status: 404 });
     }
+    if (!res.ok) {
+      console.error('Tigris GET failed:', res.status, await res.text());
+      return NextResponse.json({ error: 'Failed to load image' }, { status: 502 });
+    }
 
-    const bytes = await response.Body.transformToByteArray();
+    const bytes = await res.arrayBuffer();
 
-    return new NextResponse(Buffer.from(bytes), {
+    return new NextResponse(bytes, {
       status: 200,
       headers: {
-        'Content-Type': response.ContentType || 'image/jpeg',
+        'Content-Type': res.headers.get('content-type') || 'image/jpeg',
         'Cache-Control': 'public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800',
         'X-Content-Type-Options': 'nosniff',
       },
     });
   } catch (err: any) {
-    if (err?.name === 'NoSuchKey' || err?.$metadata?.httpStatusCode === 404) {
-      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-    }
     console.error('Error serving Tigris image:', err);
     return NextResponse.json({ error: 'Failed to load image' }, { status: 500 });
   }
