@@ -163,9 +163,9 @@ export async function POST(request: NextRequest) {
       items: orderItemsData,
     };
 
-    // 6. Trigger Brevo Transactional Email Notifications
+    // 6. Trigger Brevo Transactional Email Notifications (awaited so Cloudflare Workers completes dispatch)
     const customerEmail = email || userSession?.email || null;
-    Promise.allSettled([
+    await Promise.allSettled([
       // Admin alert email
       sendAdminNewOrderAlert({
         orderNumber: order.orderNumber,

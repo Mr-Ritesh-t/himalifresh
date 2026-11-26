@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send Brevo welcome email to new user
-    sendWelcomeEmail({
+    // Send Brevo welcome email to new user (awaited for Cloudflare Workers)
+    await sendWelcomeEmail({
       name: user.name,
       email: user.email,
     }).catch((err) => console.error('[Brevo Welcome Email Error]', err));

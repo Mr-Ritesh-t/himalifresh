@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send Brevo email notifications (Store Admin Alert + Customer Acknowledgement)
-    sendContactFormEmails({
+    await sendContactFormEmails({
       name,
       email,
       phone,
