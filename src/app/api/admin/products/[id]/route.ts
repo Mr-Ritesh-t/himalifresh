@@ -80,13 +80,17 @@ export async function PATCH(
       });
 
       if (galleryImages.length > 0) {
-        await prisma.productImage.createMany({
-          data: galleryImages.map((url: string, idx: number) => ({
-            productId: id,
-            imageUrl: url,
-            displayOrder: idx,
-          })),
-        });
+        await Promise.all(
+          galleryImages.map((url: string, idx: number) =>
+            prisma.productImage.create({
+              data: {
+                productId: id,
+                imageUrl: url,
+                displayOrder: idx,
+              },
+            })
+          )
+        );
       }
     }
 

@@ -139,12 +139,14 @@ export async function POST(request: NextRequest) {
     });
 
     await Promise.all([
-      prisma.orderItem.createMany({
-        data: orderItemsData.map((item) => ({
-          ...item,
-          orderId: createdOrder.id,
-        })),
-      }),
+      ...orderItemsData.map((item) =>
+        prisma.orderItem.create({
+          data: {
+            ...item,
+            orderId: createdOrder.id,
+          },
+        })
+      ),
       prisma.orderStatusHistory.create({
         data: {
           orderId: createdOrder.id,

@@ -95,13 +95,17 @@ export async function POST(request: NextRequest) {
     });
 
     if (galleryImages && galleryImages.length > 0) {
-      await prisma.productImage.createMany({
-        data: galleryImages.map((url, idx) => ({
-          productId: createdProduct.id,
-          imageUrl: url,
-          displayOrder: idx,
-        })),
-      });
+      await Promise.all(
+        galleryImages.map((url, idx) =>
+          prisma.productImage.create({
+            data: {
+              productId: createdProduct.id,
+              imageUrl: url,
+              displayOrder: idx,
+            },
+          })
+        )
+      );
     }
 
     const product = await prisma.product.findUnique({
