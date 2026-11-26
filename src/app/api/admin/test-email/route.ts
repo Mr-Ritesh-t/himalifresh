@@ -75,9 +75,10 @@ export async function POST(request: NextRequest) {
       message: 'Test email successfully sent via Brevo! Please check your inbox and Spam folder.',
     });
   } catch (error: any) {
+    console.error('Test email error:', error);
     return NextResponse.json({
       success: false,
-      error: error?.message || 'Failed to send test email',
+      error: 'Failed to send test email',
     }, { status: 500 });
   }
 }

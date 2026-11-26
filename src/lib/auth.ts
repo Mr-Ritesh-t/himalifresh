@@ -2,15 +2,21 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'himali_fresh_super_secure_jwt_secret_key_2026_change_in_production'
-);
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable must be set in production.');
+  }
+  return new TextEncoder().encode(
+    secret || 'himali_fresh_local_dev_only_secret_key'
+  );
+}
 
 const TOKEN_COOKIE_NAME = 'himali_admin_token';
 const TOKEN_EXPIRY = '7d';
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  return bcrypt.hash(password, 12);
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
@@ -22,12 +28,12 @@ export async function createAdminToken(payload: { id: string; email: string; rol
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(TOKEN_EXPIRY)
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 export async function verifyAdminToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (payload.isUser === true) return null;
     if (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN') return null;
     return payload as { id: string; email: string; role: string; name: string };
@@ -58,12 +64,12 @@ export async function createUserToken(payload: UserSessionPayload): Promise<stri
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(TOKEN_EXPIRY)
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 export async function verifyUserToken(token: string): Promise<UserSessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (payload.isUser !== true || !payload.id || !payload.email) return null;
     return {
       id: String(payload.id),

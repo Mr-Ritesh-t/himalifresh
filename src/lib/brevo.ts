@@ -1,5 +1,15 @@
 import { formatPrice } from './utils';
 
+function escapeHtml(value: string | null | undefined): string {
+  if (!value) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export interface BrevoRecipient {
   email: string;
   name?: string;
@@ -175,8 +185,8 @@ export async function sendOrderConfirmationEmail(params: {
       (item) => `
       <tr>
         <td>
-          <strong>${item.productNameSnapshot}</strong>
-          ${item.weightSnapshot ? `<br><span style="font-size: 12px; color: #64748B;">Net: ${item.weightSnapshot}</span>` : ''}
+          <strong>${escapeHtml(item.productNameSnapshot)}</strong>
+          ${item.weightSnapshot ? `<br><span style="font-size: 12px; color: #64748B;">Net: ${escapeHtml(item.weightSnapshot)}</span>` : ''}
         </td>
         <td style="text-align: center;">${item.quantity}</td>
         <td style="text-align: right;">${formatPrice(item.unitPriceSnapshot)}</td>
@@ -185,16 +195,23 @@ export async function sendOrderConfirmationEmail(params: {
     )
     .join('');
 
+  const safeName = escapeHtml(customerName);
+  const safePhone = escapeHtml(phone);
+  const safeAddress = escapeHtml(address);
+  const safeCity = escapeHtml(city);
+  const safePincode = escapeHtml(pincode);
+  const safeOrderNumber = escapeHtml(orderNumber);
+
   const bodyHtml = `
-    <h2 style="color: #064B32; margin-top: 0;">Order Received, ${customerName}!</h2>
+    <h2 style="color: #064B32; margin-top: 0;">Order Received, ${safeName}!</h2>
     <p style="font-size: 15px; line-height: 1.5; color: #334155;">
-      Thank you for shopping with <strong>Himali Fresh</strong>. We have received your order enquiry <strong>#${orderNumber}</strong>. Our team in Siliguri is reviewing the fresh batch availability and will coordinate your dispatch via WhatsApp.
+      Thank you for shopping with <strong>Himali Fresh</strong>. We have received your order enquiry <strong>#${safeOrderNumber}</strong>. Our team in Siliguri is reviewing the fresh batch availability and will coordinate your dispatch via WhatsApp.
     </p>
 
     <div class="info-box">
       <div style="font-weight: bold; color: #064B32; margin-bottom: 6px;">Delivery Details:</div>
-      <div><strong>Customer:</strong> ${customerName} (${phone})</div>
-      <div><strong>Address:</strong> ${address}, ${city} - ${pincode}</div>
+      <div><strong>Customer:</strong> ${safeName} (${safePhone})</div>
+      <div><strong>Address:</strong> ${safeAddress}, ${safeCity} - ${safePincode}</div>
     </div>
 
     <h3 style="font-size: 15px; color: #064B32; margin-bottom: 8px;">Order Summary:</h3>
@@ -386,20 +403,26 @@ export async function sendContactFormEmails(params: {
   const { name, email, phone, subject, message } = params;
   const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
 
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safePhone = escapeHtml(phone);
+  const safeSubject = escapeHtml(subject);
+  const safeMessage = escapeHtml(message);
+
   // Email to Admin
   const adminHtml = `
     <h2 style="color: #064B32; margin-top: 0;">📬 New Contact Message Received</h2>
     <div class="info-box">
-      <div><strong>From:</strong> ${name} &lt;${email}&gt;</div>
-      ${phone ? `<div><strong>Phone:</strong> ${phone}</div>` : ''}
-      <div><strong>Subject:</strong> ${subject}</div>
+      <div><strong>From:</strong> ${safeName} &lt;${safeEmail}&gt;</div>
+      ${phone ? `<div><strong>Phone:</strong> ${safePhone}</div>` : ''}
+      <div><strong>Subject:</strong> ${safeSubject}</div>
     </div>
     <h3 style="font-size: 14px; color: #064B32;">Message:</h3>
     <div style="background: #FAF7F2; padding: 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; border: 1px solid #E2D9C8;">
-      ${message}
+      ${safeMessage}
     </div>
     <div style="margin-top: 20px;">
-      <a href="mailto:${email}?subject=Re:%20${encodeURIComponent(subject)}" class="btn">
+      <a href="mailto:${encodeURIComponent(email)}?subject=Re:%20${encodeURIComponent(subject)}" class="btn">
         Reply via Email
       </a>
     </div>
@@ -407,13 +430,13 @@ export async function sendContactFormEmails(params: {
 
   // Email to Customer
   const customerHtml = `
-    <h2 style="color: #064B32; margin-top: 0;">Thank you for contacting us, ${name}!</h2>
+    <h2 style="color: #064B32; margin-top: 0;">Thank you for contacting us, ${safeName}!</h2>
     <p style="font-size: 15px; color: #334155; line-height: 1.5;">
-      We have received your message regarding <strong>"${subject}"</strong>. Our team in Siliguri will review your enquiry and get back to you shortly.
+      We have received your message regarding <strong>"${safeSubject}"</strong>. Our team in Siliguri will review your enquiry and get back to you shortly.
     </p>
     <div class="info-box">
       <strong>Your Message:</strong><br>
-      <span style="color: #475569; font-style: italic;">"${message}"</span>
+      <span style="color: #475569; font-style: italic;">"${safeMessage}"</span>
     </div>
     <p style="font-size: 14px; color: #64748B;">
       For urgent assistance, you can also reach us directly on WhatsApp at <strong>+91 98320 78728</strong>.

@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error?.message || 'Failed to upload image',
+        error: 'Failed to upload image',
       },
       { status: 500 }
     );
