@@ -124,10 +124,10 @@ export default function RefundPolicyPage() {
                     WhatsApp Pre-Order Assistance (+91 74777 68499)
                   </a>
                   <a
-                    href="mailto:riteshtayade68@gmail.com"
+                    href="mailto:himalifresh@gmail.com"
                     className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
                   >
-                    Email: riteshtayade68@gmail.com
+                    Email: himalifresh@gmail.com
                   </a>
                 </div>
               </section>

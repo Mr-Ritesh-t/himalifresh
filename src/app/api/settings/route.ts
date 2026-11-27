@@ -18,7 +18,7 @@ export async function GET() {
           tagline: 'The Spirit of Himalayas',
           phone: '+91 74777 68499',
           whatsappNumber: '917477768499',
-          email: 'riteshtayade68@gmail.com',
+          email: 'himalifresh@gmail.com',
           address: 'Dagapur, Siliguri, West Bengal, India',
           mapUrl: 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9',
           logoUrl: '/images/logo.jpg',

@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const recipient = body.recipient || process.env.BREVO_ADMIN_EMAIL || 'riteshtayade68@gmail.com';
+    const recipient = body.recipient || process.env.BREVO_ADMIN_EMAIL || 'himalifresh@gmail.com';
 
     const apiKey = process.env.BREVO_API_KEY;
     if (!apiKey) {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+    const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'himalifresh@gmail.com';
     const senderName = process.env.BREVO_SENDER_NAME || 'Himali Fresh';
 
     // Call Brevo directly to capture full raw response

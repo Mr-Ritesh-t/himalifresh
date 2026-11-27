@@ -121,7 +121,7 @@ export async function downloadProductCatalogPdf(options: {
   const tagline = settings?.tagline || 'The Spirit of Himalayas';
   const phone = settings?.phone || '+91 74777 68499';
   const whatsapp = (settings?.whatsappNumber || '917477768499').replace(/[^\d]/g, '');
-  const email = settings?.email || 'riteshtayade68@gmail.com';
+  const email = settings?.email || 'himalifresh@gmail.com';
   const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
   const fallbackImgUrl = '/images/hero-banner.jpg';

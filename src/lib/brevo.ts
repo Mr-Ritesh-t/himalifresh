@@ -40,7 +40,7 @@ export async function sendBrevoEmail({
     return { success: false, skipped: true, error: 'BREVO_API_KEY is not configured' };
   }
 
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'himalifresh@gmail.com';
   const senderName = process.env.BREVO_SENDER_NAME || 'Himali Fresh';
 
   try {
@@ -152,7 +152,7 @@ function getEmailLayout(title: string, bodyHtml: string): string {
         <a href="${appUrl}/privacy-policy" style="color: #064B32; text-decoration: underline; margin-left: 8px;">Privacy Policy</a>
       </p>
       <p style="margin: 12px 0 0 0; font-size: 11px; color: #94A3B8; line-height: 1.4;">
-        This is a transactional communication related to your order or enquiry. We respect your privacy in accordance with DPDP Act 2023. To manage your communication preferences or request personal data deletion, email <a href="mailto:riteshtayade68@gmail.com" style="color: #64748B;">riteshtayade68@gmail.com</a>.
+        This is a transactional communication related to your order or enquiry. We respect your privacy in accordance with DPDP Act 2023. To manage your communication preferences or request personal data deletion, email <a href="mailto:himalifresh@gmail.com" style="color: #64748B;">himalifresh@gmail.com</a>.
       </p>
     </div>
   </div>
@@ -272,7 +272,7 @@ export async function sendAdminNewOrderAlert(params: {
     subtotal: number;
   }>;
 }) {
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || params.adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || params.adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'himalifresh@gmail.com';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
 
   const { orderNumber, customerName, customerEmail, phone, address, city, pincode, totalAmount, items } = params;
@@ -407,7 +407,7 @@ export async function sendContactFormEmails(params: {
   adminEmailOverride?: string | null;
 }) {
   const { name, email, phone, subject, message, adminEmailOverride } = params;
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'himalifresh@gmail.com';
 
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);

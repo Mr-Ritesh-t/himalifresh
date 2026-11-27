@@ -37,7 +37,7 @@ export function Footer({ settings: initialSettings }: FooterProps) {
 
   const businessName = settings?.businessName || 'Himali Fresh';
   const phone = settings?.phone || '+91 74777 68499';
-  const email = settings?.email || 'riteshtayade68@gmail.com';
+  const email = settings?.email || 'himalifresh@gmail.com';
   const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
   const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';

@@ -321,7 +321,7 @@ export default function AdminSettingsPage() {
             </h2>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Test whether your Brevo API key and sender email are working properly. A test email will be sent to the owner address (<strong>riteshtayade68@gmail.com</strong>).
+            Test whether your Brevo API key and sender email are working properly. A test email will be sent to the owner address (<strong>{form.email || 'himalifresh@gmail.com'}</strong>).
           </p>
 
           {testResult && (
@@ -354,7 +354,7 @@ export default function AdminSettingsPage() {
                 const res = await fetch('/api/admin/test-email', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ recipient: form.email || 'riteshtayade68@gmail.com' }),
+                  body: JSON.stringify({ recipient: form.email || 'himalifresh@gmail.com' }),
                 });
                 const data = await res.json();
                 if (data.success) {

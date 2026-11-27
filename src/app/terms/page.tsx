@@ -142,7 +142,7 @@ export default function TermsPage() {
                   <p><strong>Business Name:</strong> Himali Fresh</p>
                   <p><strong>Physical Address:</strong> Dagapur, Siliguri, West Bengal, India - 734010</p>
                   <p><strong>Customer Care Phone:</strong> <a href="tel:+917477768499" className="text-[#064B32] font-semibold">+91 74777 68499</a></p>
-                  <p><strong>Customer Care Email:</strong> <a href="mailto:riteshtayade68@gmail.com" className="text-[#064B32] font-semibold underline">riteshtayade68@gmail.com</a></p>
+                  <p><strong>Customer Care Email:</strong> <a href="mailto:himalifresh@gmail.com" className="text-[#064B32] font-semibold underline">himalifresh@gmail.com</a></p>
                 </div>
               </section>
             </div>

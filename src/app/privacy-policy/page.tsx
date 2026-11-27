@@ -187,7 +187,7 @@ export default function PrivacyPolicyPage() {
                   </p>
                   <p className="text-xs text-amber-800 mt-1">
                     • <strong>Registered Customers:</strong> Log in to your <Link href="/account" className="underline font-semibold text-[#064B32]">Account Dashboard</Link> and click &ldquo;Request Account Deletion&rdquo; under the Profile tab.<br />
-                    • <strong>Guest Orders:</strong> Email our Grievance Officer at <a href="mailto:riteshtayade68@gmail.com?subject=Personal%20Data%20Deletion%20Request" className="underline font-semibold text-[#064B32]">riteshtayade68@gmail.com</a> with the subject <em>&ldquo;Personal Data Deletion Request&rdquo;</em> quoting your phone number or order number. Requests are processed within 72 hours.
+                    • <strong>Guest Orders:</strong> Email our Grievance Officer at <a href="mailto:himalifresh@gmail.com?subject=Personal%20Data%20Deletion%20Request" className="underline font-semibold text-[#064B32]">himalifresh@gmail.com</a> with the subject <em>&ldquo;Personal Data Deletion Request&rdquo;</em> quoting your phone number or order number. Requests are processed within 72 hours.
                   </p>
                 </div>
               </section>
@@ -204,7 +204,7 @@ export default function PrivacyPolicyPage() {
                   <p><strong>Name:</strong> Ritesh Tayade</p>
                   <p><strong>Designation:</strong> Data Grievance Officer, Himali Fresh</p>
                   <p><strong>Address:</strong> Dagapur, Siliguri, West Bengal, India - 734010</p>
-                  <p><strong>Email:</strong> <a href="mailto:riteshtayade68@gmail.com" className="text-[#064B32] underline font-semibold">riteshtayade68@gmail.com</a></p>
+                  <p><strong>Email:</strong> <a href="mailto:himalifresh@gmail.com" className="text-[#064B32] underline font-semibold">himalifresh@gmail.com</a></p>
                   <p><strong>Phone / WhatsApp:</strong> <a href="tel:+917477768499" className="text-[#064B32] font-semibold">+91 74777 68499</a></p>
                   <p><strong>Response Time:</strong> Within 48 to 72 business hours</p>
                 </div>
