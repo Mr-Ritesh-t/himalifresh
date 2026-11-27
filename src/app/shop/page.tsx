@@ -18,7 +18,6 @@ interface ShopPageProps {
     maxPrice?: string;
     available?: string;
     sort?: string;
-    page?: string;
   }>;
 }
 
@@ -30,9 +29,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : undefined;
   const availableOnly = params.available === 'true';
   const sort = params.sort || 'newest';
-  const page = parseInt(params.page || '1', 10);
-  const limit = 12;
-  const skip = (page - 1) * limit;
 
   // Build Prisma where clause
   const where: any = { isActive: true };
@@ -74,8 +70,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       where,
       include: { category: true },
       orderBy,
-      skip,
-      take: limit,
     }),
     prisma.product.count({ where }),
     prisma.category.findMany({
@@ -89,8 +83,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     }),
     prisma.businessSettings.findUnique({ where: { id: 'default-settings' } }),
   ]);
-
-  const totalPages = Math.ceil(totalCount / limit);
 
   // Helper to build URL with query params
   const buildFilterUrl = (overrides: Record<string, string | undefined>) => {
@@ -111,22 +103,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     });
 
     return `/shop?${current.toString()}`;
-  };
-
-  // Helper for smart pagination with ellipsis
-  const getPaginationPages = () => {
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-    const pages: (number | string)[] = [];
-    if (page <= 3) {
-      pages.push(1, 2, 3, 4, '...', totalPages);
-    } else if (page >= totalPages - 2) {
-      pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-    } else {
-      pages.push(1, '...', page - 1, page, page + 1, '...', totalPages);
-    }
-    return pages;
   };
 
   return (
@@ -167,7 +143,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               </div>
               <div className="ml-7 h-0.5 w-16 bg-[#E9BE54] rounded-full mb-2" />
               <p className="text-xs sm:text-sm text-himali-muted">
-                Showing {products.length} of {totalCount} authentic products
+                Showing all {products.length} authentic {products.length === 1 ? 'product' : 'products'}
               </p>
             </div>
 
@@ -203,7 +179,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <div className="lg:hidden mb-5 -mx-4 px-4 overflow-x-auto no-scrollbar scroll-smooth">
             <div className="flex items-center gap-2 min-w-max pb-1">
               <Link
-                href={buildFilterUrl({ category: undefined, page: '1' })}
+                href={buildFilterUrl({ category: undefined })}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                   !categorySlug
                     ? 'bg-[#064B32] text-white shadow-sm ring-1 ring-[#064B32]'
@@ -217,7 +193,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 return (
                   <Link
                     key={cat.id}
-                    href={buildFilterUrl({ category: cat.slug, page: '1' })}
+                    href={buildFilterUrl({ category: cat.slug })}
                     className={`rounded-full px-3.5 py-1.5 text-xs whitespace-nowrap transition-all ${
                       active
                         ? 'bg-[#064B32] text-white font-semibold shadow-sm ring-1 ring-[#064B32]'
@@ -362,93 +338,22 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                   </Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 md:grid-cols-3">
-                  {products.map((prod) => (
-                    <ProductCard key={prod.id} product={prod} />
-                  ))}
-                </div>
-              )}
-
-              {/* Server-side Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-                  {/* Mobile Compact Pagination */}
-                  <div className="flex sm:hidden items-center justify-between w-full max-w-xs gap-3">
-                    {page > 1 ? (
-                      <Link
-                        href={buildFilterUrl({ page: String(page - 1) })}
-                        className="flex-1 flex items-center justify-center rounded-xl border border-himali-border bg-white py-2 px-3 text-xs font-semibold text-himali-dark shadow-sm active:bg-gray-50"
-                      >
-                        ← Prev
-                      </Link>
-                    ) : (
-                      <span className="flex-1 flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 py-2 px-3 text-xs font-semibold text-gray-300 cursor-not-allowed">
-                        ← Prev
-                      </span>
-                    )}
-
-                    <span className="text-xs font-semibold text-gray-700 whitespace-nowrap px-3 py-1.5 rounded-lg bg-white border border-gray-200 shadow-xs">
-                      Page {page} of {totalPages}
-                    </span>
-
-                    {page < totalPages ? (
-                      <Link
-                        href={buildFilterUrl({ page: String(page + 1) })}
-                        className="flex-1 flex items-center justify-center rounded-xl bg-[#064B32] py-2 px-3 text-xs font-semibold text-white shadow-sm active:bg-[#073D2B]"
-                      >
-                        Next →
-                      </Link>
-                    ) : (
-                      <span className="flex-1 flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 py-2 px-3 text-xs font-semibold text-gray-300 cursor-not-allowed">
-                        Next →
-                      </span>
-                    )}
+                <>
+                  <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 md:grid-cols-3">
+                    {products.map((prod) => (
+                      <ProductCard key={prod.id} product={prod} />
+                    ))}
                   </div>
 
-                  {/* Tablet & Desktop Numbered Pagination with Ellipsis */}
-                  <div className="hidden sm:flex items-center justify-center gap-1.5">
-                    {page > 1 && (
-                      <Link
-                        href={buildFilterUrl({ page: String(page - 1) })}
-                        className="rounded-xl border border-himali-border bg-white px-3.5 py-2 text-xs font-semibold text-himali-dark hover:bg-himali-cream transition-colors"
-                      >
-                        ← Prev
-                      </Link>
-                    )}
-                    {getPaginationPages().map((pItem, idx) => {
-                      if (pItem === '...') {
-                        return (
-                          <span key={`dots-${idx}`} className="px-2 text-gray-400 text-xs font-bold">
-                            …
-                          </span>
-                        );
-                      }
-                      const pageNum = Number(pItem);
-                      const active = pageNum === page;
-                      return (
-                        <Link
-                          key={pageNum}
-                          href={buildFilterUrl({ page: String(pageNum) })}
-                          className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-semibold transition-all ${
-                            active
-                              ? 'bg-[#064B32] text-white shadow-sm'
-                              : 'border border-himali-border bg-white text-gray-700 hover:bg-[#FAF8F0]'
-                          }`}
-                        >
-                          {pageNum}
-                        </Link>
-                      );
-                    })}
-                    {page < totalPages && (
-                      <Link
-                        href={buildFilterUrl({ page: String(page + 1) })}
-                        className="rounded-xl border border-himali-border bg-white px-3.5 py-2 text-xs font-semibold text-himali-dark hover:bg-himali-cream transition-colors"
-                      >
-                        Next →
-                      </Link>
-                    )}
-                  </div>
-                </div>
+                  {products.length > 6 && (
+                    <div className="mt-12 text-center">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-himali-border text-xs text-himali-muted shadow-xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        You've viewed all {products.length} products
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
