@@ -488,7 +488,7 @@ export function Header({ settings }: HeaderProps) {
                 })}
               </div>
             </div>
-            <div className="pt-6 border-t border-gray-100 space-y-3">
+            <div className="pt-6 border-t border-gray-100">
               <a
                 href="https://wa.me/919832078728?text=Hi%20Himali%20Fresh%2C%20I%20would%20like%20to%20enquire%20about%20your%20products."
                 target="_blank"
@@ -497,15 +497,6 @@ export function Header({ settings }: HeaderProps) {
               >
                 Chat on WhatsApp
               </a>
-              <div className="text-center">
-                <Link
-                  href="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-[11px] text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  Store Owner / Admin Portal →
-                </Link>
-              </div>
             </div>
           </div>
         </div>

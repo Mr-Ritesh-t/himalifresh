@@ -107,11 +107,6 @@ export function Footer({ settings }: FooterProps) {
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link href="/admin" className="hover:text-white transition-colors">
-                  Store Owner Login
-                </Link>
-              </li>
             </ul>
           </div>
 

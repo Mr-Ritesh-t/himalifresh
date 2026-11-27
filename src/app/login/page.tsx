@@ -172,13 +172,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Back to store & Admin link */}
-        <div className="mt-6 flex items-center justify-between text-xs text-gray-500 px-2">
+        {/* Back to store */}
+        <div className="mt-6 flex items-center justify-center text-xs text-gray-500 px-2">
           <Link href="/" className="hover:text-[#064B32] transition-colors">
             ← Return to Store
-          </Link>
-          <Link href="/admin/login" className="hover:text-[#064B32] transition-colors">
-            Staff / Owner Portal →
           </Link>
         </div>
       </div>
