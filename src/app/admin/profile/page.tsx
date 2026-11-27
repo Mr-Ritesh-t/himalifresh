@@ -111,7 +111,7 @@ export default function AdminProfilePage() {
 
           <div>
             <span className="text-slate-400 font-semibold uppercase text-[10px]">Email</span>
-            <p className="font-mono text-slate-800 text-sm mt-0.5">{user?.email || 'admin@himalifresh.com'}</p>
+            <p className="font-mono text-slate-800 text-sm mt-0.5">{user?.email || 'himalifresh@gmail.com'}</p>
           </div>
 
           <div>
