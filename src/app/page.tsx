@@ -252,7 +252,7 @@ export default async function HomePage() {
               </div>
               <div className="relative aspect-video lg:aspect-square w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10">
                 <Image
-                  src="/images/storybanner.png"
+                  src="/images/storybanner.jpeg"
                   alt="Himalayan Products"
                   fill
                   className="object-cover"
