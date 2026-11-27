@@ -548,6 +548,13 @@ export async function sendOtpEmail(params: {
     </p>
   `;
 
+  if (!process.env.BREVO_API_KEY && process.env.NODE_ENV !== 'production') {
+    console.log(`\n==================================================`);
+    console.log(`[LOCAL DEV OTP CODE] -> ${toEmail}: ${otp}`);
+    console.log(`(Configure BREVO_API_KEY in .env or Cloudflare secrets)`);
+    console.log(`==================================================\n`);
+  }
+
   return sendBrevoEmail({
     to: [{ email: toEmail, name: recipientName || toEmail }],
     subject,
