@@ -7,7 +7,7 @@ import { ShieldCheck, Lock, FileText, UserCheck, AlertCircle, Mail, Phone, MapPi
 
 export const metadata = {
   title: 'Privacy Policy | Himali Fresh',
-  description: 'Learn how Himali Fresh collects, protects, uses, and respects your personal data in compliance with the Digital Personal Data Protection Act (DPDPA 2023) and global standards.',
+  description: 'Learn how Himali Fresh collects, protects, uses, and respects your personal data and privacy standards.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-[#064B32] mb-3">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>DPDP Act (2023) &amp; Privacy Compliant</span>
+                <span>Privacy &amp; Data Security Protected</span>
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
                 Privacy Policy
@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
                   Welcome to <strong>Himali Fresh</strong> (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;). We are deeply committed to respecting your privacy, protecting your personal data, and practicing strict <strong>data minimization</strong>. This Privacy Policy outlines how we collect, process, store, and safeguard your information when you browse our website, create an account, purchase authentic Himalayan produce, or contact us.
                 </p>
                 <p>
-                  This policy is framed in compliance with the <strong>Digital Personal Data Protection Act, 2023 (DPDP Act)</strong> of India, the Information Technology Act, 2000, and internationally accepted data fair-practice principles.
+                  This policy describes how we collect, handle, and safeguard your information in accordance with applicable laws and fair data protection practices.
                 </p>
               </section>
 
@@ -163,7 +163,7 @@ export default function PrivacyPolicyPage() {
                   6. Age of Consent &amp; Protection of Children&apos;s Data
                 </h2>
                 <p>
-                  In compliance with Section 9 of the DPDP Act 2023, Himali Fresh does not knowingly collect, process, or track personal data belonging to individuals under the age of 18 without verifiable parental or guardian consent. If you are under 18, please browse our website under the supervision of a parent or guardian. If we discover that personal data of a minor has been collected without verified consent, we will promptly delete it.
+                  Himali Fresh does not knowingly collect, process, or track personal data belonging to individuals under the age of 18 without verifiable parental or guardian consent. If you are under 18, please browse our website under the supervision of a parent or guardian. If we discover that personal data of a minor has been collected without verified consent, we will promptly delete it.
                 </p>
               </section>
 
@@ -173,7 +173,7 @@ export default function PrivacyPolicyPage() {
                   <UserCheck className="h-4 w-4" /> 7. Your Data Rights &amp; Deletion Requests
                 </h2>
                 <p className="text-amber-950">
-                  You retain complete ownership over your personal data under the DPDP Act 2023 and have the right to:
+                  You retain complete ownership over your personal data and have the right to:
                 </p>
                 <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-amber-900">
                   <li><strong>Right to Access:</strong> Request a summary of the personal data we hold about you.</li>
@@ -198,7 +198,7 @@ export default function PrivacyPolicyPage() {
                   8. Grievance Redressal Officer
                 </h2>
                 <p>
-                  In accordance with the Information Technology Act 2000 and DPDP Act 2023, the details of our designated Grievance Officer are provided below:
+                  In accordance with applicable privacy standards and regulations, the details of our designated Grievance Officer are provided below:
                 </p>
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-xs space-y-1.5 text-gray-700">
                   <p><strong>Name:</strong> Ashis Chhetri</p>

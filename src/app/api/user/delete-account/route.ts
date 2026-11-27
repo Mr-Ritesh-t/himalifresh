@@ -5,8 +5,7 @@ import { getUserSession, USER_TOKEN_COOKIE_NAME } from '@/lib/auth';
 
 /**
  * Endpoint for authenticated users to request immediate deletion of their account
- * and personal data in accordance with the Digital Personal Data Protection Act (DPDP Act 2023)
- * and GDPR Right to Erasure (Article 17).
+ * and personal data upon request.
  */
 export async function POST() {
   try {

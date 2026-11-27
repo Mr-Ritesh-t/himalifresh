@@ -152,7 +152,7 @@ function getEmailLayout(title: string, bodyHtml: string): string {
         <a href="${appUrl}/privacy-policy" style="color: #064B32; text-decoration: underline; margin-left: 8px;">Privacy Policy</a>
       </p>
       <p style="margin: 12px 0 0 0; font-size: 11px; color: #94A3B8; line-height: 1.4;">
-        This is a transactional communication related to your order or enquiry. We respect your privacy in accordance with DPDP Act 2023. To manage your communication preferences or request personal data deletion, email <a href="mailto:himalifresh@gmail.com" style="color: #64748B;">himalifresh@gmail.com</a>.
+        This is a transactional communication related to your order or enquiry. We respect your privacy. To manage your communication preferences or request personal data deletion, email <a href="mailto:himalifresh@gmail.com" style="color: #64748B;">himalifresh@gmail.com</a>.
       </p>
     </div>
   </div>

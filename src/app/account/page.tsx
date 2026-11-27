@@ -72,7 +72,7 @@ export default function AccountPage() {
 
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
-      'Are you sure you want to permanently delete your account and personal data? In compliance with DPDP Act 2023, your profile, contact details, and saved addresses will be permanently removed. This action cannot be undone.'
+      'Are you sure you want to permanently delete your account and personal data? Your profile, contact details, and saved addresses will be permanently removed. This action cannot be undone.'
     );
     if (!confirmed) return;
 
@@ -462,7 +462,7 @@ export default function AccountPage() {
                 </button>
               </form>
 
-              {/* DPDP Act 2023 / GDPR Right to Erasure (Account Deletion) */}
+              {/* Right to Erasure (Account Deletion) */}
               <div className="mt-10 pt-8 border-t border-gray-100">
                 <div className="rounded-2xl border border-rose-200 bg-rose-50/50 p-5 space-y-3">
                   <div className="flex items-center gap-2 text-rose-800 font-serif font-bold text-sm">
@@ -470,7 +470,7 @@ export default function AccountPage() {
                     <span>Personal Data &amp; Account Erasure</span>
                   </div>
                   <p className="text-xs text-rose-700 leading-relaxed">
-                    Under India&apos;s Digital Personal Data Protection Act (DPDP Act 2023) and privacy regulations, you have the right to permanently erase your customer account, contact phone number, and delivery addresses from our servers.
+                    You have the right to permanently erase your customer account, contact phone number, and delivery addresses from our servers at any time.
                   </p>
                   <button
                     type="button"
