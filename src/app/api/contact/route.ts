@@ -41,6 +41,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Fetch settings to route to custom store email if configured
+    const settings = await prisma.businessSettings.findUnique({
+      where: { id: 'default-settings' },
+    });
+
     // Send Brevo email notifications (Store Admin Alert + Customer Acknowledgement)
     await sendContactFormEmails({
       name,
@@ -48,6 +53,7 @@ export async function POST(request: NextRequest) {
       phone,
       subject,
       message,
+      adminEmailOverride: settings?.email,
     }).catch((err) => console.error('[Brevo Contact Form Error]', err));
 
     return NextResponse.json({

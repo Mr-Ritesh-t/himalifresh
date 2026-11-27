@@ -163,7 +163,13 @@ export async function POST(request: NextRequest) {
       items: orderItemsData,
     };
 
-    // 6. Trigger Brevo Transactional Email Notifications (awaited so Cloudflare Workers completes dispatch)
+    // 6. Fetch business settings to get official email and WhatsApp number
+    const settings = await prisma.businessSettings.findUnique({
+      where: { id: 'default-settings' },
+    });
+    const businessWhatsApp = settings?.whatsappNumber || '919832078728';
+
+    // 7. Trigger Brevo Transactional Email Notifications (awaited so Cloudflare Workers completes dispatch)
     const customerEmail = email || userSession?.email || null;
     await Promise.allSettled([
       // Admin alert email
@@ -176,6 +182,7 @@ export async function POST(request: NextRequest) {
         city: order.city,
         pincode: order.pincode,
         totalAmount: order.totalAmount,
+        adminEmailOverride: settings?.email,
         items: order.items,
       }),
       // Customer confirmation email (if email is available)
@@ -194,13 +201,7 @@ export async function POST(request: NextRequest) {
         : Promise.resolve(),
     ]).catch((err) => console.error('[Brevo Dispatch Error]', err));
 
-    // 7. Fetch business settings to get the official WhatsApp number
-    const settings = await prisma.businessSettings.findUnique({
-      where: { id: 'default-settings' },
-    });
-    const businessWhatsApp = settings?.whatsappNumber || '919832078728';
-
-    // 7. Format WhatsApp message
+    // 8. Format WhatsApp message
     const whatsappPayload = {
       orderNumber: order.orderNumber,
       customerName: order.customerName,

@@ -263,6 +263,7 @@ export async function sendAdminNewOrderAlert(params: {
   city: string;
   pincode: string;
   totalAmount: number;
+  adminEmailOverride?: string | null;
   items: Array<{
     productNameSnapshot: string;
     weightSnapshot?: string | null;
@@ -271,7 +272,7 @@ export async function sendAdminNewOrderAlert(params: {
     subtotal: number;
   }>;
 }) {
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || params.adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
 
   const { orderNumber, customerName, customerEmail, phone, address, city, pincode, totalAmount, items } = params;
@@ -403,9 +404,10 @@ export async function sendContactFormEmails(params: {
   phone?: string | null;
   subject: string;
   message: string;
+  adminEmailOverride?: string | null;
 }) {
-  const { name, email, phone, subject, message } = params;
-  const adminEmail = process.env.BREVO_ADMIN_EMAIL || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
+  const { name, email, phone, subject, message, adminEmailOverride } = params;
+  const adminEmail = process.env.BREVO_ADMIN_EMAIL || adminEmailOverride || process.env.NEXT_PUBLIC_BUSINESS_EMAIL || 'riteshtayade68@gmail.com';
 
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
