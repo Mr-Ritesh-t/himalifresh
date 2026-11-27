@@ -5,7 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
 import Link from 'next/link';
-import { Phone, Mail, MapPin, MessageSquare, Send, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageSquare, Send, CheckCircle2, AlertCircle, ExternalLink, Instagram, Facebook } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ContactPage() {
@@ -158,16 +158,38 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-himali-border">
+                <div className="pt-4 border-t border-himali-border flex flex-col sm:flex-row gap-2.5">
                   <a
                     href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello Himali Fresh, I would like to connect with your team.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-himali-green py-3 px-4 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-himali-green py-3 px-4 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors"
                   >
                     <MessageSquare className="h-4 w-4" />
-                    <span>Direct WhatsApp Chat</span>
+                    <span>WhatsApp Chat</span>
                   </a>
+                  <div className="flex items-center justify-center gap-2">
+                    <a
+                      href="https://www.instagram.com/himalifresh/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center h-11 w-11 rounded-2xl bg-rose-50 hover:bg-[#E1306C] hover:text-white text-[#E1306C] transition-colors border border-rose-100"
+                      title="Follow on Instagram"
+                      aria-label="Instagram"
+                    >
+                      <Instagram className="h-5 w-5" />
+                    </a>
+                    <a
+                      href="https://www.facebook.com/himalifresh"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center h-11 w-11 rounded-2xl bg-blue-50 hover:bg-[#1877F2] hover:text-white text-[#1877F2] transition-colors border border-blue-100"
+                      title="Follow on Facebook"
+                      aria-label="Facebook"
+                    >
+                      <Facebook className="h-5 w-5" />
+                    </a>
+                  </div>
                 </div>
               </div>
 

@@ -26,7 +26,7 @@ export async function GET() {
           announcement: 'Delivering Authentic Himalayan Products Across India',
           homepageHeading: 'Pure & Authentic Himalayan Products',
           homepageDescription: 'Traditional flavours, organic goodness and handcrafted products from the Himalayas.',
-          socialLinks: '{"facebook":"https://facebook.com","instagram":"https://instagram.com"}',
+          socialLinks: '{"facebook":"https://www.facebook.com/himalifresh","instagram":"https://www.instagram.com/himalifresh/"}',
           aboutStory: 'Founded in Siliguri, at the gateway to the Eastern Himalayas...',
         },
       });

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone, Mail, MapPin, MessageSquare } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageSquare, Instagram, Facebook } from 'lucide-react';
 
 interface FooterProps {
   settings?: {
@@ -14,6 +14,7 @@ interface FooterProps {
     mapUrl?: string;
     logoUrl?: string;
     whatsappNumber?: string;
+    socialLinks?: string;
   };
 }
 
@@ -42,6 +43,18 @@ export function Footer({ settings: initialSettings }: FooterProps) {
   const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
   const whatsapp = settings?.whatsappNumber || '917477768499';
+
+  let parsedSocials: { instagram?: string; facebook?: string } = {};
+  if (settings?.socialLinks) {
+    try {
+      parsedSocials = typeof settings.socialLinks === 'string' ? JSON.parse(settings.socialLinks) : settings.socialLinks;
+    } catch {
+      parsedSocials = {};
+    }
+  }
+
+  const instagramUrl = parsedSocials.instagram || 'https://www.instagram.com/himalifresh/';
+  const facebookUrl = parsedSocials.facebook || 'https://www.facebook.com/himalifresh';
 
   return (
     <footer className="bg-himali-dark text-white pt-10 pb-20 sm:pt-16 sm:pb-24 md:pb-12 border-t border-himali-primary/60">
@@ -72,7 +85,7 @@ export function Footer({ settings: initialSettings }: FooterProps) {
               traditional pickles, organic rice, mountain honey, and artisan
               delicacies directly from the Eastern Himalayas to your doorstep.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href={`https://wa.me/${whatsapp.replace(/[^\d]/g, '')}?text=${encodeURIComponent('Hi Himali Fresh, I would like to enquire about your products.')}`}
                 target="_blank"
@@ -82,6 +95,30 @@ export function Footer({ settings: initialSettings }: FooterProps) {
                 <MessageSquare className="h-4 w-4" />
                 Chat on WhatsApp
               </a>
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-white/10 hover:bg-[#E1306C] text-white transition-all shadow-sm hover:scale-105"
+                  title="Follow us on Instagram"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+              )}
+              {facebookUrl && (
+                <a
+                  href={facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-white/10 hover:bg-[#1877F2] text-white transition-all shadow-sm hover:scale-105"
+                  title="Follow us on Facebook"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
+              )}
             </div>
           </div>
 

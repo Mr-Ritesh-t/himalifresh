@@ -251,6 +251,57 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
+        {/* Social Media Links */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          <h2 className="font-serif text-base font-bold text-slate-900 pb-2 border-b border-slate-100">
+            Social Media Profiles
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Instagram Profile URL</label>
+              <input
+                type="url"
+                value={(() => {
+                  try {
+                    return JSON.parse(form.socialLinks).instagram || '';
+                  } catch {
+                    return '';
+                  }
+                })()}
+                onChange={(e) => {
+                  let current: any = {};
+                  try { current = JSON.parse(form.socialLinks); } catch {}
+                  setForm({ ...form, socialLinks: JSON.stringify({ ...current, instagram: e.target.value }) });
+                }}
+                placeholder="https://www.instagram.com/himalifresh/"
+                className="w-full rounded-xl border border-slate-300 p-2.5 text-xs focus:border-himali-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Facebook Page URL</label>
+              <input
+                type="url"
+                value={(() => {
+                  try {
+                    return JSON.parse(form.socialLinks).facebook || '';
+                  } catch {
+                    return '';
+                  }
+                })()}
+                onChange={(e) => {
+                  let current: any = {};
+                  try { current = JSON.parse(form.socialLinks); } catch {}
+                  setForm({ ...form, socialLinks: JSON.stringify({ ...current, facebook: e.target.value }) });
+                }}
+                placeholder="https://www.facebook.com/himalifresh"
+                className="w-full rounded-xl border border-slate-300 p-2.5 text-xs focus:border-himali-primary focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Homepage & Announcement Banner */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
           <h2 className="font-serif text-base font-bold text-slate-900 pb-2 border-b border-slate-100">
