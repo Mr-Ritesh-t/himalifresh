@@ -34,7 +34,9 @@ async function getHomepageData() {
     ]);
     return { settings, categories, featuredProducts };
   } catch (error) {
-    console.warn('Database fallback during homepage render:', error);
+    if (process.env.DATABASE_URL) {
+      console.warn('Database fallback during homepage render:', error);
+    }
     return { settings: null, categories: [], featuredProducts: [] };
   }
 }

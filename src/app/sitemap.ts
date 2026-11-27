@@ -91,7 +91,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticRoutes, ...categoryRoutes, ...productRoutes];
   } catch (err) {
-    console.error('Error generating dynamic sitemap:', err);
+    if (process.env.DATABASE_URL) {
+      console.error('Error generating dynamic sitemap:', err);
+    }
     return staticRoutes;
   }
 }

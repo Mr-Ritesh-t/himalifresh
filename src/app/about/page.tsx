@@ -16,7 +16,9 @@ export default async function AboutPage() {
       where: { id: 'default-settings' },
     });
   } catch (error) {
-    console.warn('Database query fallback during AboutPage render:', error);
+    if (process.env.DATABASE_URL) {
+      console.warn('Database query fallback during AboutPage render:', error);
+    }
   }
 
   const aboutStory =
