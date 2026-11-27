@@ -90,16 +90,12 @@ export async function createOtpChallenge(params: {
   }
 
   // Invalidate any previous unconsumed challenges for this email and purpose
-  await prisma.otpChallenge.updateMany({
-    where: {
-      email: normalizedEmail,
-      purpose: params.purpose,
-      consumedAt: null,
-    },
-    data: {
-      consumedAt: now,
-    },
-  });
+  // Note: We use executeRawUnsafe because PrismaNeonHTTP does not support transactions in updateMany
+  await prisma.$executeRawUnsafe(
+    `UPDATE "OtpChallenge" SET "consumedAt" = NOW() WHERE "email" = $1 AND "purpose" = $2 AND "consumedAt" IS NULL`,
+    normalizedEmail,
+    params.purpose
+  );
 
   // Generate new OTP and hash
   const otp = generateNumericOtp();
