@@ -14,8 +14,13 @@ function getJwtSecret(): Uint8Array {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin UI routes (except /admin/login)
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+  // Protect admin UI routes (except public admin auth pages like /admin/login, /admin/forgot-password)
+  const isPublicAdminUi =
+    pathname === '/admin/login' ||
+    pathname.startsWith('/admin/forgot-password') ||
+    pathname.startsWith('/admin/reset-password');
+
+  if (pathname.startsWith('/admin') && !isPublicAdminUi) {
     const token = request.cookies.get('himali_admin_token')?.value;
 
     if (!token) {
@@ -37,8 +42,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect admin API routes (except /api/admin/auth/login)
-  if (pathname.startsWith('/api/admin') && pathname !== '/api/admin/auth/login') {
+  // Protect admin API routes (except public admin auth endpoints)
+  const isPublicAdminApi =
+    pathname === '/api/admin/auth/login' ||
+    pathname.startsWith('/api/admin/auth/otp');
+
+  if (pathname.startsWith('/api/admin') && !isPublicAdminApi) {
     const token = request.cookies.get('himali_admin_token')?.value;
     if (!token) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });

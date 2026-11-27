@@ -38,8 +38,10 @@ export default async function NotFound() {
     settings = fetchedSettings;
     categories = fetchedCategories;
   } catch (err) {
-    // Graceful offline fallback
-    console.warn('[404 Page]: Could not fetch dynamic settings/categories', err);
+    // Graceful offline fallback during build or downtime
+    if (process.env.DATABASE_URL) {
+      console.warn('[404 Page]: Could not fetch dynamic settings/categories', err);
+    }
   }
 
   const whatsappNumber = (settings?.whatsappNumber || '919832078728').replace(/[^\d]/g, '');

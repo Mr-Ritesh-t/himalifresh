@@ -4,6 +4,7 @@ import { PrismaNeonHTTP } from '@prisma/adapter-neon';
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createPrismaClient(): PrismaClient {
+  const isBuildTime = !process.env.DATABASE_URL;
   const connectionString =
     process.env.DATABASE_URL ||
     'postgresql://build_placeholder:build_placeholder@localhost:5432/build_placeholder';
@@ -11,7 +12,7 @@ function createPrismaClient(): PrismaClient {
   const adapter = new PrismaNeonHTTP(connectionString, {});
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+    log: isBuildTime ? [] : (process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error']),
   });
 }
 

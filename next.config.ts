@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Output standalone for OpenNext Cloudflare Workers bundling
+  output: 'standalone',
+
   // Disable X-Powered-By header to avoid exposing framework version
   poweredByHeader: false,
 

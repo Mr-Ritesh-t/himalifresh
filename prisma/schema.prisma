@@ -17,22 +17,25 @@ model AdminUser {
   email        String   @unique
   passwordHash String
   role         String   @default("ADMIN") // ADMIN, SUPER_ADMIN
+  tokenVersion Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
 model User {
-  id           String    @id @default(uuid())
-  name         String
-  email        String    @unique
-  phone        String?
-  passwordHash String
-  address      String?
-  city         String?
-  pincode      String?
-  orders       Order[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  passwordHash  String
+  emailVerified Boolean   @default(false)
+  tokenVersion  Int       @default(0)
+  address       String?
+  city          String?
+  pincode       String?
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Category {
@@ -165,4 +168,28 @@ model ContactMessage {
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model OtpChallenge {
+  id             String    @id @default(uuid())
+  email          String
+  purpose        String    // CUSTOMER_REGISTRATION, CUSTOMER_PASSWORD_RESET, ADMIN_PASSWORD_RESET
+  otpHash        String
+  metadata       String?   // JSON string of registration payload
+  expiresAt      DateTime
+  failedAttempts Int       @default(0)
+  lastSentAt     DateTime  @default(now())
+  consumedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+}
+
+model RateLimitLog {
+  id        String   @id @default(uuid())
+  key       String   // e.g. "otp-send:ip", "otp-verify:ip"
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
 }

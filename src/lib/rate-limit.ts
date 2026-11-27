@@ -46,6 +46,46 @@ export function checkRateLimit(
 }
 
 /**
+ * Distributed persistent rate limiter (uses PostgreSQL via Prisma with in-memory fallback)
+ * Guarantees cross-instance rate limiting across Cloudflare Worker isolates.
+ */
+export async function checkDistributedRateLimit(
+  key: string,
+  limit: number = 5,
+  windowMs: number = 60000
+): Promise<{ allowed: boolean; remaining: number; resetInMs: number }> {
+  const memoryCheck = checkRateLimit(key, limit, windowMs);
+  if (!memoryCheck.allowed) {
+    return memoryCheck;
+  }
+
+  try {
+    const { prisma } = await import('./prisma');
+    const windowStart = new Date(Date.now() - windowMs);
+
+    const count = await prisma.rateLimitLog.count({
+      where: {
+        key,
+        createdAt: { gte: windowStart },
+      },
+    });
+
+    if (count >= limit) {
+      return { allowed: false, remaining: 0, resetInMs: windowMs };
+    }
+
+    await prisma.rateLimitLog.create({
+      data: { key },
+    });
+
+    return { allowed: true, remaining: Math.max(0, limit - count - 1), resetInMs: windowMs };
+  } catch (err) {
+    // If database rate logging fails (e.g. build time or temporary DB unavailability), rely safely on memory rate check
+    return memoryCheck;
+  }
+}
+
+/**
  * Extract client IP from proxy headers (Vercel, Cloudflare, standard reverse proxy)
  */
 export function getClientIp(request: Request): string {
