@@ -201,7 +201,7 @@ export default function PrivacyPolicyPage() {
                   In accordance with the Information Technology Act 2000 and DPDP Act 2023, the details of our designated Grievance Officer are provided below:
                 </p>
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-xs space-y-1.5 text-gray-700">
-                  <p><strong>Name:</strong> Ritesh Tayade</p>
+                  <p><strong>Name:</strong> Ashis Chhetri</p>
                   <p><strong>Designation:</strong> Data Grievance Officer, Himali Fresh</p>
                   <p><strong>Address:</strong> Dagapur, Siliguri, West Bengal, India - 734010</p>
                   <p><strong>Email:</strong> <a href="mailto:himalifresh@gmail.com" className="text-[#064B32] underline font-semibold">himalifresh@gmail.com</a></p>
