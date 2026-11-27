@@ -84,6 +84,31 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     prisma.businessSettings.findUnique({ where: { id: 'default-settings' } }),
   ]);
 
+  // Ensure vegetable category is always placed at the very last in category tabs and filters
+  const sortedCategories = [...categories].sort((a, b) => {
+    const aIsVeg = a.slug === 'fresh-vegetables' || a.name.toLowerCase().includes('vegetable');
+    const bIsVeg = b.slug === 'fresh-vegetables' || b.name.toLowerCase().includes('vegetable');
+    if (aIsVeg && !bIsVeg) return 1;
+    if (!aIsVeg && bIsVeg) return -1;
+    return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
+  });
+
+  // When viewing all products with default sort, place vegetable products at the very end
+  const displayProducts =
+    !categorySlug && sort === 'newest'
+      ? [...products].sort((a, b) => {
+          const aIsVeg =
+            a.category?.slug === 'fresh-vegetables' ||
+            a.category?.name?.toLowerCase().includes('vegetable');
+          const bIsVeg =
+            b.category?.slug === 'fresh-vegetables' ||
+            b.category?.name?.toLowerCase().includes('vegetable');
+          if (aIsVeg && !bIsVeg) return 1;
+          if (!aIsVeg && bIsVeg) return -1;
+          return 0;
+        })
+      : products;
+
   // Helper to build URL with query params
   const buildFilterUrl = (overrides: Record<string, string | undefined>) => {
     const current = new URLSearchParams();
@@ -188,7 +213,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               >
                 All Products ({totalCount})
               </Link>
-              {categories.map((cat) => {
+              {sortedCategories.map((cat) => {
                 const active = categorySlug === cat.slug;
                 return (
                   <Link
@@ -272,7 +297,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                     <span className="text-xs text-himali-muted">{totalCount}</span>
                   </Link>
 
-                  {categories.map((cat) => (
+                  {sortedCategories.map((cat) => (
                     <Link
                       key={cat.id}
                       href={buildFilterUrl({ category: cat.slug })}
@@ -322,7 +347,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
             {/* Product Grid Area */}
             <div className="lg:col-span-3">
-              {products.length === 0 ? (
+              {displayProducts.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-himali-border bg-white p-12 text-center">
                   <p className="font-serif text-xl font-bold text-himali-dark mb-2">
                     No products found
@@ -340,16 +365,16 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               ) : (
                 <>
                   <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 md:grid-cols-3">
-                    {products.map((prod) => (
+                    {displayProducts.map((prod) => (
                       <ProductCard key={prod.id} product={prod} />
                     ))}
                   </div>
 
-                  {products.length > 6 && (
+                  {displayProducts.length > 6 && (
                     <div className="mt-12 text-center">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-himali-border text-xs text-himali-muted shadow-xs">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        You've viewed all {products.length} products
+                        You've viewed all {displayProducts.length} products
                       </div>
                     </div>
                   )}
