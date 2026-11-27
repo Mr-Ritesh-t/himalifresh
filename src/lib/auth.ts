@@ -23,8 +23,8 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export async function createAdminToken(payload: { id: string; email: string; role: string; name: string }): Promise<string> {
-  return new SignJWT({ ...payload, isAdmin: true })
+export async function createAdminToken(payload: { id: string; email: string; role: string; name: string; tokenVersion?: number }): Promise<string> {
+  return new SignJWT({ ...payload, isAdmin: true, tokenVersion: payload.tokenVersion ?? 0 })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(TOKEN_EXPIRY)
@@ -36,7 +36,7 @@ export async function verifyAdminToken(token: string) {
     const { payload } = await jwtVerify(token, getJwtSecret());
     if (payload.isUser === true) return null;
     if (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN') return null;
-    return payload as { id: string; email: string; role: string; name: string };
+    return payload as { id: string; email: string; role: string; name: string; tokenVersion?: number };
   } catch (error) {
     return null;
   }
@@ -57,10 +57,11 @@ export interface UserSessionPayload {
   email: string;
   name: string;
   phone?: string | null;
+  tokenVersion?: number;
 }
 
 export async function createUserToken(payload: UserSessionPayload): Promise<string> {
-  return new SignJWT({ ...payload, isUser: true })
+  return new SignJWT({ ...payload, isUser: true, tokenVersion: payload.tokenVersion ?? 0 })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(TOKEN_EXPIRY)
@@ -76,6 +77,7 @@ export async function verifyUserToken(token: string): Promise<UserSessionPayload
       email: String(payload.email),
       name: String(payload.name || ''),
       phone: payload.phone ? String(payload.phone) : null,
+      tokenVersion: typeof payload.tokenVersion === 'number' ? payload.tokenVersion : 0,
     };
   } catch (error) {
     return null;

@@ -492,3 +492,66 @@ export async function sendWelcomeEmail(params: { name: string; email: string }) 
     htmlContent: getEmailLayout(`Welcome to Himali Fresh`, bodyHtml),
   });
 }
+
+/**
+ * 6. Send 6-digit Email Verification / OTP Code
+ */
+export async function sendOtpEmail(params: {
+  toEmail: string;
+  recipientName?: string;
+  otp: string;
+  purpose: 'CUSTOMER_REGISTRATION' | 'CUSTOMER_PASSWORD_RESET' | 'ADMIN_PASSWORD_RESET';
+  expiresMinutes?: number;
+}) {
+  const { toEmail, recipientName, otp, purpose, expiresMinutes = 5 } = params;
+  const name = recipientName ? escapeHtml(recipientName) : 'Valued Member';
+
+  let subject = '';
+  let heading = '';
+  let description = '';
+
+  switch (purpose) {
+    case 'CUSTOMER_REGISTRATION':
+      subject = `${otp} is your verification code for Himali Fresh`;
+      heading = 'Verify Your Email Address';
+      description = `Thank you for signing up with Himali Fresh. Please use the following 6-digit verification code to complete your registration:`;
+      break;
+    case 'CUSTOMER_PASSWORD_RESET':
+      subject = `${otp} is your password reset code for Himali Fresh`;
+      heading = 'Password Reset Request';
+      description = `We received a request to reset the password for your Himali Fresh customer account. Use the 6-digit code below to proceed:`;
+      break;
+    case 'ADMIN_PASSWORD_RESET':
+      subject = `${otp} is your admin password reset code`;
+      heading = 'Admin Password Reset Request';
+      description = `A password reset was requested for your Himali Fresh Administrator account. Enter this 6-digit verification code to continue:`;
+      break;
+  }
+
+  const bodyHtml = `
+    <h2 style="color: #064B32; margin-top: 0; font-family: serif;">${heading}</h2>
+    <p style="font-size: 15px; color: #334155; line-height: 1.5;">Hello ${name},</p>
+    <p style="font-size: 15px; color: #334155; line-height: 1.5;">${description}</p>
+    
+    <div style="background: #F8F5F0; border: 2px dashed #064B32; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+      <div style="font-size: 12px; text-transform: uppercase; color: #064B32; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">6-Digit Verification Code</div>
+      <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #064B32; font-family: monospace;">${otp}</div>
+      <div style="font-size: 12px; color: #64748B; margin-top: 8px;">Valid for <strong>${expiresMinutes} minutes</strong></div>
+    </div>
+
+    <div style="background: #FFFBEB; border-left: 4px solid #E9BE54; padding: 12px 16px; border-radius: 4px; font-size: 13px; color: #92400E; margin-bottom: 20px;">
+      <strong>Security notice:</strong> Himali Fresh representatives will never ask for this code. If you did not initiate this request, you can safely ignore this email.
+    </div>
+
+    <p style="font-size: 13px; color: #64748B;">
+      If you need any help, contact our Siliguri team via WhatsApp at +91 98320 78728.
+    </p>
+  `;
+
+  return sendBrevoEmail({
+    to: [{ email: toEmail, name: recipientName || toEmail }],
+    subject,
+    htmlContent: getEmailLayout(heading, bodyHtml),
+    textContent: `${heading}\n\nHello ${name},\n\nYour 6-digit verification code is: ${otp}\nThis code is valid for ${expiresMinutes} minutes.\n\nDo not share this code with anyone.`,
+  });
+}
