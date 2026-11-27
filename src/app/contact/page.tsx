@@ -66,15 +66,29 @@ export default function ContactPage() {
     }
   };
 
-  const phone = '+91 98320 78728';
-  const email = 'riteshtayade68@gmail.com';
-  const address = 'Dagapur, Siliguri, West Bengal, India';
-  const mapUrl = 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
-  const whatsappNumber = '919832078728';
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.settings) {
+          setSettings(data.settings);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const businessName = settings?.businessName || 'Himali Fresh';
+  const phone = settings?.phone || '+91 98320 78728';
+  const email = settings?.email || 'riteshtayade68@gmail.com';
+  const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
+  const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
+  const whatsappNumber = settings?.whatsappNumber || '919832078728';
 
   return (
     <div className="min-h-screen flex flex-col bg-himali-cream/30">
-      <Header />
+      <Header settings={settings || undefined} />
 
       <main className="flex-1 py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -83,7 +97,7 @@ export default function ContactPage() {
               Get in Touch
             </span>
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-himali-dark mt-2 mb-2">
-              Contact Himali Fresh
+              Contact {businessName}
             </h1>
             <div className="mx-auto h-0.5 w-16 bg-[#E9BE54] rounded-full mb-3" />
             <p className="text-xs sm:text-sm text-himali-muted leading-relaxed">
@@ -160,8 +174,8 @@ export default function ContactPage() {
               {/* Embedded Google Map */}
               <div className="overflow-hidden rounded-3xl border border-himali-border bg-white shadow-card h-64 sm:h-80 relative group">
                 <iframe
-                  title="Himali Fresh Location Map"
-                  src="https://maps.google.com/maps?q=Dagapur,+Siliguri,+West+Bengal&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  title={`${businessName} Location Map`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -326,7 +340,7 @@ export default function ContactPage() {
         </div>
       </main>
 
-      <Footer />
+      <Footer settings={settings || undefined} />
       <MobileNav />
     </div>
   );

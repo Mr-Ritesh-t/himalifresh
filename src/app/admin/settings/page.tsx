@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Upload, Save, AlertCircle, Mail, Send, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -126,6 +128,7 @@ export default function AdminSettingsPage() {
         return;
       }
 
+      router.refresh();
       toast.success('Business settings updated successfully! Public website updated.');
     } catch (err) {
       toast.error('Network error');

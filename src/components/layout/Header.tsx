@@ -24,14 +24,16 @@ import { formatPrice } from '@/lib/utils';
 
 interface HeaderProps {
   settings?: {
+    businessName?: string;
     phone?: string;
     email?: string;
     announcement?: string;
+    whatsappNumber?: string;
     logoUrl?: string;
   };
 }
 
-export function Header({ settings }: HeaderProps) {
+export function Header({ settings: initialSettings }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { totalCount } = useCart();
@@ -45,10 +47,28 @@ export function Header({ settings }: HeaderProps) {
   const desktopSearchRef = useRef<HTMLDivElement>(null);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
 
+  const [settings, setSettings] = useState(initialSettings);
+
+  useEffect(() => {
+    if (initialSettings) {
+      setSettings(initialSettings);
+    } else {
+      fetch('/api/settings')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && data?.settings) {
+            setSettings(data.settings);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialSettings]);
+
   const phone = settings?.phone || '+91 98320 78728';
   const email = settings?.email || 'riteshtayade68@gmail.com';
   const announcement = settings?.announcement || 'Delivering Authentic Himalayan Products from Siliguri';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
+  const whatsappNumber = (settings?.whatsappNumber || '919832078728').replace(/[^\d]/g, '');
 
   // Live search debounce
   useEffect(() => {
@@ -490,7 +510,9 @@ export function Header({ settings }: HeaderProps) {
             </div>
             <div className="pt-6 border-t border-gray-100">
               <a
-                href="https://wa.me/919832078728?text=Hi%20Himali%20Fresh%2C%20I%20would%20like%20to%20enquire%20about%20your%20products."
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                  'Hi Himali Fresh, I would like to enquire about your products.'
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 rounded-xl bg-[#064B32] px-4 py-2.5 text-xs font-semibold text-white shadow hover:bg-[#073D2B] transition-colors"

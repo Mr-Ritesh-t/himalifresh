@@ -92,20 +92,28 @@ export default async function HomePage() {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-[#E9BE54]">
                     <path d="M3 20L9 8l4 6 3-4 5 10H3z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" fill="none"/>
                   </svg>
-                  <span>Welcome to Himali Fresh</span>
+                  <span>Welcome to {settings?.businessName || 'Himali Fresh'}</span>
                 </div>
 
                 {/* Main heading */}
                 <h1 className="font-serif font-bold leading-tight mb-3 sm:mb-4 [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] max-w-[270px] sm:max-w-none">
-                  <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white">
-                    Pure &amp; Authentic
-                  </span>
-                  <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-[#E9BE54] italic mt-0.5 sm:mt-1">
-                    Himalayan
-                  </span>
-                  <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white">
-                    Products
-                  </span>
+                  {settings?.homepageHeading && settings.homepageHeading !== 'Pure & Authentic Himalayan Products' ? (
+                    <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white">
+                      {settings.homepageHeading}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white">
+                        Pure &amp; Authentic
+                      </span>
+                      <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-[#E9BE54] italic mt-0.5 sm:mt-1">
+                        Himalayan
+                      </span>
+                      <span className="block text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white">
+                        Products
+                      </span>
+                    </>
+                  )}
                 </h1>
 
                 {/* Sub-text */}
@@ -232,11 +240,8 @@ export default async function HomePage() {
                   Bringing the Spirit of Himalayas to Your Home
                 </h2>
                 <p className="text-white/80 text-sm leading-relaxed mb-6">
-                  Nestled in Dagapur, Siliguri—the gateway to the Eastern Himalayas—Himali Fresh was
-                  created to share the authentic flavours, untamed aroma, and rich culinary traditions
-                  of our mountain communities. From tongue-tingling Dalle Khursani pickles and wild
-                  Timur to stone-ground grains and organic Darjeeling flushes, we celebrate authentic
-                  mountain goodness.
+                  {settings?.aboutStory ||
+                    `Nestled in ${settings?.address || 'Dagapur, Siliguri'}—the gateway to the Eastern Himalayas—${settings?.businessName || 'Himali Fresh'} was created to share the authentic flavours, untamed aroma, and rich culinary traditions of our mountain communities. From tongue-tingling Dalle Khursani pickles and wild Timur to stone-ground grains and organic Darjeeling flushes, we celebrate authentic mountain goodness.`}
                 </p>
                 <Link
                   href="/about"

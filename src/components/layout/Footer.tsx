@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, MessageSquare } from 'lucide-react';
@@ -15,7 +17,24 @@ interface FooterProps {
   };
 }
 
-export function Footer({ settings }: FooterProps) {
+export function Footer({ settings: initialSettings }: FooterProps) {
+  const [settings, setSettings] = useState(initialSettings);
+
+  useEffect(() => {
+    if (initialSettings) {
+      setSettings(initialSettings);
+    } else {
+      fetch('/api/settings')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && data?.settings) {
+            setSettings(data.settings);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialSettings]);
+
   const businessName = settings?.businessName || 'Himali Fresh';
   const phone = settings?.phone || '+91 98320 78728';
   const email = settings?.email || 'riteshtayade68@gmail.com';
@@ -184,7 +203,7 @@ export function Footer({ settings }: FooterProps) {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-200/60">
-          <p>© {new Date().getFullYear()} Himali Fresh. All rights reserved. Dagapur, Siliguri, West Bengal.</p>
+          <p>© {new Date().getFullYear()} {businessName}. All rights reserved. {address}.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
