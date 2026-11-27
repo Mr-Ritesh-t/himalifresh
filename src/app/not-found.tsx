@@ -44,7 +44,7 @@ export default async function NotFound() {
     }
   }
 
-  const whatsappNumber = (settings?.whatsappNumber || '919832078728').replace(/[^\d]/g, '');
+  const whatsappNumber = (settings?.whatsappNumber || '917477768499').replace(/[^\d]/g, '');
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF5EB]">

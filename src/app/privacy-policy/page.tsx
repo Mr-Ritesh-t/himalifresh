@@ -205,7 +205,7 @@ export default function PrivacyPolicyPage() {
                   <p><strong>Designation:</strong> Data Grievance Officer, Himali Fresh</p>
                   <p><strong>Address:</strong> Dagapur, Siliguri, West Bengal, India - 734010</p>
                   <p><strong>Email:</strong> <a href="mailto:riteshtayade68@gmail.com" className="text-[#064B32] underline font-semibold">riteshtayade68@gmail.com</a></p>
-                  <p><strong>Phone / WhatsApp:</strong> <a href="tel:+919832078728" className="text-[#064B32] font-semibold">+91 98320 78728</a></p>
+                  <p><strong>Phone / WhatsApp:</strong> <a href="tel:+917477768499" className="text-[#064B32] font-semibold">+91 74777 68499</a></p>
                   <p><strong>Response Time:</strong> Within 48 to 72 business hours</p>
                 </div>
               </section>

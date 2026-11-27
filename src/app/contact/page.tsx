@@ -80,11 +80,11 @@ export default function ContactPage() {
   }, []);
 
   const businessName = settings?.businessName || 'Himali Fresh';
-  const phone = settings?.phone || '+91 98320 78728';
+  const phone = settings?.phone || '+91 74777 68499';
   const email = settings?.email || 'riteshtayade68@gmail.com';
   const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
   const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
-  const whatsappNumber = settings?.whatsappNumber || '919832078728';
+  const whatsappNumber = settings?.whatsappNumber || '917477768499';
 
   return (
     <div className="min-h-screen flex flex-col bg-himali-cream/30">
@@ -265,7 +265,7 @@ export default function ContactPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="e.g. +91 98320..."
+                        placeholder="e.g. +91 74777..."
                         className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
                       />
                     </div>

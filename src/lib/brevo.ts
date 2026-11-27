@@ -103,7 +103,7 @@ export async function sendBrevoEmail({
  */
 function getEmailLayout(title: string, bodyHtml: string): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919832078728';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '917477768499';
 
   return `
 <!DOCTYPE html>
@@ -182,7 +182,7 @@ export async function sendOrderConfirmationEmail(params: {
   }>;
 }) {
   const { orderNumber, customerName, customerEmail, phone, address, city, pincode, totalAmount, items } = params;
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919832078728';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '917477768499';
 
   const rows = items
     .map(
@@ -445,7 +445,7 @@ export async function sendContactFormEmails(params: {
       <span style="color: #475569; font-style: italic;">"${safeMessage}"</span>
     </div>
     <p style="font-size: 14px; color: #64748B;">
-      For urgent assistance, you can also reach us directly on WhatsApp at <strong>+91 98320 78728</strong>.
+      For urgent assistance, you can also reach us directly on WhatsApp at <strong>+91 74777 68499</strong>.
     </p>
   `;
 
@@ -546,7 +546,7 @@ export async function sendOtpEmail(params: {
     </div>
 
     <p style="font-size: 13px; color: #64748B;">
-      If you need any help, contact our Siliguri team via WhatsApp at +91 98320 78728.
+      If you need any help, contact our Siliguri team via WhatsApp at +91 74777 68499.
     </p>
   `;
 

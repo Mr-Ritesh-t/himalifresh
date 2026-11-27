@@ -48,7 +48,7 @@ export default async function HomePage() {
     settings?.homepageDescription ||
     'Traditional flavours, organic goodness and handcrafted products from the Himalayas.';
   const heroImage = settings?.heroImageUrl || '/images/herobanner.png';
-  const whatsappNumber = settings?.whatsappNumber || '919832078728';
+  const whatsappNumber = settings?.whatsappNumber || '917477768499';
 
   return (
     <div className="min-h-screen flex flex-col bg-white">

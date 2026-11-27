@@ -115,7 +115,7 @@ function TrackOrderContent() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. 9832078728"
+                placeholder="e.g. 7477768499"
                 className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
               />
             </div>
@@ -210,7 +210,7 @@ function TrackOrderContent() {
           <div className="pt-4 border-t border-himali-border flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-xs text-himali-muted">Need help with this order?</span>
             <a
-              href={`https://wa.me/919832078728?text=Hi%20Himali%20Fresh,%20I%20am%20inquiring%20about%20Order%20${order.orderNumber}`}
+              href={`https://wa.me/917477768499?text=Hi%20Himali%20Fresh,%20I%20am%20inquiring%20about%20Order%20${order.orderNumber}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-xl border border-himali-green bg-emerald-50 px-4 py-2 text-xs font-semibold text-himali-green hover:bg-himali-green hover:text-white transition-colors"

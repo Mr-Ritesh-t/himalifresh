@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     const settings = await prisma.businessSettings.findUnique({
       where: { id: 'default-settings' },
     });
-    const businessWhatsApp = settings?.whatsappNumber || '919832078728';
+    const businessWhatsApp = settings?.whatsappNumber || '917477768499';
 
     // 7. Trigger Brevo Transactional Email Notifications (awaited so Cloudflare Workers completes dispatch)
     const customerEmail = email || userSession?.email || null;

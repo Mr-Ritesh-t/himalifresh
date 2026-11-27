@@ -12,8 +12,8 @@
     "enabled": true
   },
   "vars": {
-    "NEXT_PUBLIC_BUSINESS_PHONE": "+91 98320 78728",
-    "NEXT_PUBLIC_WHATSAPP_NUMBER": "919832078728",
+    "NEXT_PUBLIC_BUSINESS_PHONE": "+91 74777 68499",
+    "NEXT_PUBLIC_WHATSAPP_NUMBER": "917477768499",
     "NEXT_PUBLIC_BUSINESS_EMAIL": "riteshtayade68@gmail.com",
     "NEXT_PUBLIC_BUSINESS_NAME": "Himali Fresh",
     "NEXT_PUBLIC_BUSINESS_TAGLINE": "The Spirit of Himalayas",
@@ -25,8 +25,8 @@
   },
   "previews": {
     "vars": {
-      "NEXT_PUBLIC_BUSINESS_PHONE": "+91 98320 78728",
-      "NEXT_PUBLIC_WHATSAPP_NUMBER": "919832078728",
+      "NEXT_PUBLIC_BUSINESS_PHONE": "+91 74777 68499",
+      "NEXT_PUBLIC_WHATSAPP_NUMBER": "917477768499",
       "NEXT_PUBLIC_BUSINESS_EMAIL": "riteshtayade68@gmail.com",
       "NEXT_PUBLIC_BUSINESS_NAME": "Himali Fresh",
       "NEXT_PUBLIC_BUSINESS_TAGLINE": "The Spirit of Himalayas",

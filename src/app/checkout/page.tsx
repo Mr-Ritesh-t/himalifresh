@@ -361,7 +361,7 @@ export default function CheckoutPage() {
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="e.g. 9832078728"
+                      placeholder="e.g. 7477768499"
                       className="w-full rounded-xl border border-himali-border p-3 text-sm focus:border-himali-primary focus:outline-none"
                     />
                   </div>

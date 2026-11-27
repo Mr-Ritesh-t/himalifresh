@@ -100,7 +100,7 @@ export default function RefundPolicyPage() {
                   You may only cancel your order if the package has <strong>not yet been dispatched</strong> from our Siliguri hub.
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5 text-gray-600">
-                  <li>To request pre-dispatch cancellation, message us immediately on WhatsApp at <strong>+91 98320 78728</strong> with your Order Number.</li>
+                  <li>To request pre-dispatch cancellation, message us immediately on WhatsApp at <strong>+91 74777 68499</strong> with your Order Number.</li>
                   <li>Once an order has been packed, handed over to courier personnel, or assigned a tracking AWB number, it <strong>cannot</strong> be cancelled, recalled, or refunded.</li>
                 </ul>
               </section>
@@ -115,13 +115,13 @@ export default function RefundPolicyPage() {
                 </p>
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <a
-                    href="https://wa.me/919832078728?text=Hi%20Himali%20Fresh%2C%20I%20have%20a%20question%20before%20placing%20my%20order."
+                    href="https://wa.me/917477768499?text=Hi%20Himali%20Fresh%2C%20I%20have%20a%20question%20before%20placing%20my%20order."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-full bg-[#064B32] px-4 py-2 text-xs font-semibold text-white hover:bg-[#073D2B] transition-colors"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
-                    WhatsApp Pre-Order Assistance (+91 98320 78728)
+                    WhatsApp Pre-Order Assistance (+91 74777 68499)
                   </a>
                   <a
                     href="mailto:riteshtayade68@gmail.com"

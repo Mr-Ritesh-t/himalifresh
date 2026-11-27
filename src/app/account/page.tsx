@@ -344,7 +344,7 @@ export default function AccountPage() {
                           Need an update on this order?
                         </span>
                         <a
-                          href={`https://wa.me/919832078728?text=${encodeURIComponent(
+                          href={`https://wa.me/917477768499?text=${encodeURIComponent(
                             `Hi Himali Fresh, I would like an update regarding my Order #${ord.orderNumber}.`
                           )}`}
                           target="_blank"
@@ -406,7 +406,7 @@ export default function AccountPage() {
                       type="tel"
                       value={profileData.phone}
                       onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                      placeholder="+91 98320 00000"
+                      placeholder="+91 74777 00000"
                       className="w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2.5 px-3.5 text-sm text-gray-900 focus:border-[#064B32] focus:bg-white focus:outline-none"
                     />
                   </div>

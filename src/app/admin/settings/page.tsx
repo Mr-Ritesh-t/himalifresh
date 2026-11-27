@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
                 required
                 value={form.whatsappNumber}
                 onChange={(e) => setForm({ ...form, whatsappNumber: e.target.value })}
-                placeholder="e.g. 919832078728"
+                placeholder="e.g. 917477768499"
                 className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-mono focus:border-himali-primary focus:outline-none"
               />
             </div>

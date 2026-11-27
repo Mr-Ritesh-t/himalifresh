@@ -36,12 +36,12 @@ export function Footer({ settings: initialSettings }: FooterProps) {
   }, [initialSettings]);
 
   const businessName = settings?.businessName || 'Himali Fresh';
-  const phone = settings?.phone || '+91 98320 78728';
+  const phone = settings?.phone || '+91 74777 68499';
   const email = settings?.email || 'riteshtayade68@gmail.com';
   const address = settings?.address || 'Dagapur, Siliguri, West Bengal, India';
   const mapUrl = settings?.mapUrl || 'https://maps.app.goo.gl/ecdT4JyhbpveKzhJ9';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
-  const whatsapp = settings?.whatsappNumber || '919832078728';
+  const whatsapp = settings?.whatsappNumber || '917477768499';
 
   return (
     <footer className="bg-himali-dark text-white pt-10 pb-20 sm:pt-16 sm:pb-24 md:pb-12 border-t border-himali-primary/60">

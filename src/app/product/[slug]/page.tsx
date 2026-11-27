@@ -43,7 +43,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     prisma.businessSettings.findUnique({ where: { id: 'default-settings' } }),
   ]);
 
-  const whatsappNumber = settings?.whatsappNumber || '919832078728';
+  const whatsappNumber = settings?.whatsappNumber || '917477768499';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.himalifresh.com';
 
   const jsonLd = {

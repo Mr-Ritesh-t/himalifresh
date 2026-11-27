@@ -64,11 +64,11 @@ export function Header({ settings: initialSettings }: HeaderProps) {
     }
   }, [initialSettings]);
 
-  const phone = settings?.phone || '+91 98320 78728';
+  const phone = settings?.phone || '+91 74777 68499';
   const email = settings?.email || 'riteshtayade68@gmail.com';
   const announcement = settings?.announcement || 'Delivering Authentic Himalayan Products from Siliguri';
   const logoUrl = settings?.logoUrl || '/images/logo.jpg';
-  const whatsappNumber = (settings?.whatsappNumber || '919832078728').replace(/[^\d]/g, '');
+  const whatsappNumber = (settings?.whatsappNumber || '917477768499').replace(/[^\d]/g, '');
 
   // Live search debounce
   useEffect(() => {
