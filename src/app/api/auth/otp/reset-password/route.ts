@@ -53,16 +53,11 @@ export async function POST(request: NextRequest) {
     });
 
     // Invalidate any remaining active password reset challenges for this customer
-    await prisma.otpChallenge.updateMany({
-      where: {
-        email: tokenPayload.email,
-        purpose: OTP_PURPOSES.CUSTOMER_PASSWORD_RESET,
-        consumedAt: null,
-      },
-      data: {
-        consumedAt: new Date(),
-      },
-    });
+    await prisma.$executeRawUnsafe(
+      `UPDATE "OtpChallenge" SET "consumedAt" = NOW() WHERE "email" = $1 AND "purpose" = $2 AND "consumedAt" IS NULL`,
+      tokenPayload.email,
+      OTP_PURPOSES.CUSTOMER_PASSWORD_RESET
+    );
 
     return NextResponse.json({
       success: true,
