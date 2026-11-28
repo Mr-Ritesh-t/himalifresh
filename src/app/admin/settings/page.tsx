@@ -363,16 +363,16 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Brevo Email Diagnostics & Test */}
+        {/* Email Test */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Mail className="h-5 w-5 text-himali-primary" />
             <h2 className="text-sm sm:text-base font-bold text-slate-900 font-serif">
-              Brevo Transactional Email Test & Diagnostics
+              Email Test
             </h2>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Test whether your Brevo API key and sender email are working properly. A test email will be sent to the owner address (<strong>{form.email || 'himalifresh@gmail.com'}</strong>).
+            A test email will be sent to the owner address.
           </p>
 
           {testResult && (
@@ -389,7 +389,7 @@ export default function AdminSettingsPage() {
                 <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
               )}
               <div className="leading-relaxed">
-                <strong>{testResult.success ? 'Success: ' : 'Brevo Error: '}</strong>
+                <strong>{testResult.success ? 'Success: ' : 'Error: '}</strong>
                 <span>{testResult.message}</span>
               </div>
             </div>
