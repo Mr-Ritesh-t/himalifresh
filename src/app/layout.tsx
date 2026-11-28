@@ -17,28 +17,47 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Himali Fresh | The Spirit of Himalayas',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com'),
+  title: {
+    default: 'Himali Fresh | The Spirit of Himalayas - Authentic Food, Pickles & Organic Teas',
+    template: '%s | Himali Fresh',
+  },
   description:
     'Pure and authentic Himalayan food products, pickles, Dalle chillies, mountain teas, organic rice, and artisanal spices sourced directly from Siliguri, Darjeeling and Eastern Himalayan valleys.',
   keywords: [
     'Himali Fresh',
     'Himalayan food products',
     'Dalle chilli pickle',
+    'Dalle Khursani',
     'Bamboo shoot pickle',
-    'Siliguri organic store',
+    'Titoura snack',
     'Darjeeling green tea',
+    'Darjeeling orthodox tea',
     'Gundruk',
     'Yak cheese chhurpi',
     'Himalayan spices',
+    'Siliguri organic store',
+    'Authentic Nepali food online India',
   ],
-  authors: [{ name: 'Himali Fresh' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com'),
+  authors: [{ name: 'Himali Fresh', url: 'https://himalifresh.com' }],
+  creator: 'Himali Fresh',
+  publisher: 'Himali Fresh',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    title: 'Himali Fresh | The Spirit of Himalayas',
-    description:
-      'Pure and authentic Himalayan food products, pickles, mountain teas, and organic foods.',
+    type: 'website',
+    locale: 'en_IN',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com',
     siteName: 'Himali Fresh',
+    title: 'Himali Fresh | The Spirit of Himalayas',
+    description:
+      'Pure, authentic Himalayan food products, handcrafted pickles, mountain teas, and organic produce sourced directly from hill farmers and local artisans.',
     images: [
       {
         url: '/images/herobanner.png',
@@ -47,13 +66,73 @@ export const metadata: Metadata = {
         alt: 'Himali Fresh Himalayan Products',
       },
     ],
-    locale: 'en_IN',
-    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Himali Fresh | The Spirit of Himalayas',
+    description:
+      'Pure and authentic Himalayan food products, pickles, mountain teas, and organic foods.',
+    images: ['/images/herobanner.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/images/logo.jpg',
     apple: '/images/logo.jpg',
   },
+};
+
+const jsonLdGlobal = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://himalifresh.com/#organization',
+      name: 'Himali Fresh',
+      url: 'https://himalifresh.com',
+      logo: 'https://himalifresh.com/images/logo.jpg',
+      image: 'https://himalifresh.com/images/herobanner.png',
+      description:
+        'Pure and authentic Himalayan food products, pickles, mountain teas, and organic foods sourced from Siliguri and Eastern Himalayas.',
+      telephone: '+91 74777 68499',
+      email: 'himalifresh@gmail.com',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Dagapur',
+        addressLocality: 'Siliguri',
+        addressRegion: 'West Bengal',
+        postalCode: '734002',
+        addressCountry: 'IN',
+      },
+      sameAs: [
+        'https://www.instagram.com/himalifresh/',
+        'https://www.facebook.com/himalifresh',
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://himalifresh.com/#website',
+      url: 'https://himalifresh.com',
+      name: 'Himali Fresh',
+      publisher: {
+        '@id': 'https://himalifresh.com/#organization',
+      },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://himalifresh.com/shop?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -66,6 +145,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGlobal) }}
+        />
         <script
           defer
           src="https://www.boosthis.com/kit.js"

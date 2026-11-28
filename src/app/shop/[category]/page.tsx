@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/layout/Header';
@@ -14,6 +15,56 @@ export const revalidate = 60;
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
   searchParams: Promise<{ sort?: string }>;
+}
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { category: categorySlug } = await params;
+  const category = await prisma.category.findUnique({
+    where: { slug: categorySlug },
+  });
+
+  if (!category || !category.isActive) {
+    return {
+      title: 'Category Not Found',
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
+  const title = `${category.name} | Authentic Himalayan Specialty`;
+  const description =
+    category.description ||
+    `Browse handcrafted ${category.name} from Himali Fresh. Pure Himalayan taste, traditional recipes, and organic ingredients delivered across India.`;
+  const canonicalUrl = `${appUrl}/shop/${category.slug}`;
+
+  return {
+    title,
+    description: description.slice(0, 160),
+    alternates: {
+      canonical: `/shop/${category.slug}`,
+    },
+    openGraph: {
+      title,
+      description: description.slice(0, 160),
+      url: canonicalUrl,
+      siteName: 'Himali Fresh',
+      type: 'website',
+      images: [
+        {
+          url: category.imageUrl || '/images/herobanner.png',
+          width: 1200,
+          height: 630,
+          alt: category.name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: description.slice(0, 160),
+      images: [category.imageUrl || '/images/herobanner.png'],
+    },
+  };
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
@@ -57,8 +108,60 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
+
+  const categoryJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.name,
+    description: category.description,
+    url: `${appUrl}/shop/${category.slug}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: products.slice(0, 10).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${appUrl}/product/${p.slug}`,
+        name: p.name,
+      })),
+    },
+  };
+
+  const breadcrumbsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: appUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: `${appUrl}/shop`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: category.name,
+        item: `${appUrl}/shop/${category.slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-himali-cream/30">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+      />
       <Header settings={settings || undefined} />
 
       <main className="flex-1 py-8 sm:py-12">

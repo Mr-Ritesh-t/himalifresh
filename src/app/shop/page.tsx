@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -9,6 +10,38 @@ import { ShopSort } from '@/components/shop/ShopSort';
 import { Search, SlidersHorizontal, ArrowUpDown, ChevronRight, X } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'All Himalayan Products | Authentic Foods, Pickles & Organic Teas',
+  description:
+    'Browse our complete range of authentic Himalayan foods: traditional Dalle pickles, bamboo shoots, Titoura, Darjeeling green teas, Gundruk, Chhurpi, and mountain spices.',
+  alternates: {
+    canonical: '/shop',
+  },
+  openGraph: {
+    title: 'All Himalayan Products | Himali Fresh',
+    description:
+      'Handcrafted Himalayan pickles, orthodox teas, organic grains, and traditional spices delivered fresh across India.',
+    url: 'https://himalifresh.com/shop',
+    siteName: 'Himali Fresh',
+    type: 'website',
+    images: [
+      {
+        url: '/images/herobanner.png',
+        width: 1200,
+        height: 630,
+        alt: 'Himali Fresh Himalayan Catalogue',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'All Himalayan Products | Himali Fresh',
+    description:
+      'Authentic Himalayan foods, pickles, snacks, and mountain teas delivered across India.',
+    images: ['/images/herobanner.png'],
+  },
+};
 
 interface ShopPageProps {
   searchParams: Promise<{
@@ -130,8 +163,31 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     return `/shop?${current.toString()}`;
   };
 
+  const shopBreadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://himalifresh.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'All Products',
+        item: 'https://himalifresh.com/shop',
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-himali-cream/30">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(shopBreadcrumbJsonLd) }}
+      />
       <Header settings={settings || undefined} />
 
       <main className="flex-1 py-8 sm:py-12">

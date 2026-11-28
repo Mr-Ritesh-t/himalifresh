@@ -72,8 +72,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productRoutes: MetadataRoute.Sitemap = products.map((p) => ({
       url: `${baseUrl}/product/${p.slug}`,
       lastModified: p.updatedAt || new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
+      changeFrequency: 'daily',
+      priority: 0.9,
     }));
 
     // Dynamic categories
@@ -85,8 +85,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const categoryRoutes: MetadataRoute.Sitemap = categories.map((c) => ({
       url: `${baseUrl}/shop/${c.slug}`,
       lastModified: c.updatedAt || new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
+      changeFrequency: 'daily',
+      priority: 0.85,
     }));
 
     return [...staticRoutes, ...categoryRoutes, ...productRoutes];

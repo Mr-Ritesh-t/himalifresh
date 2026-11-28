@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -8,6 +9,23 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { Mountain, Sprout, HeartHandshake, ShieldCheck, ArrowRight, MapPin } from 'lucide-react';
 
 export const revalidate = 300; // 5 minute ISR cache for fast static delivery
+
+export const metadata: Metadata = {
+  title: 'Our Story & Heritage | Himali Fresh',
+  description:
+    'Discover the story of Himali Fresh in Siliguri. Sourcing pure Himalayan food products, pickles, organic teas, and artisan delicacies directly from indigenous hill farmers.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'Our Story & Heritage | Himali Fresh',
+    description:
+      'Connecting traditional Himalayan hill communities and organic farmers directly with food lovers across India.',
+    url: 'https://himalifresh.com/about',
+    siteName: 'Himali Fresh',
+    type: 'website',
+  },
+};
 
 export default async function AboutPage() {
   let settings = null;
