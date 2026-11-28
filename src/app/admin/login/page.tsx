@@ -121,7 +121,6 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="himalifresh@gmail.com"
                   className="w-full rounded-xl border border-gray-300 bg-white p-3.5 pl-10 text-sm text-gray-900 placeholder-gray-400 focus:border-[#064B32] focus:outline-none focus:ring-2 focus:ring-[#064B32]/20 transition-all shadow-sm"
                 />
                 <Mail className="absolute left-3.5 top-4 h-4 w-4 text-gray-400" />
