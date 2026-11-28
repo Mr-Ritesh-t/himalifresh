@@ -49,7 +49,7 @@ Set the following environment variables in your production environment settings:
 | `NODE_ENV` | `production` |
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | 64-character random string (`openssl rand -base64 32`) |
-| `NEXT_PUBLIC_APP_URL` | `https://www.himalifresh.com` |
+| `NEXT_PUBLIC_APP_URL` | `https://himalifresh.com` |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | `+91 98320 78728` |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | `919832078728` |
 | `NEXT_PUBLIC_BUSINESS_EMAIL` | `info@himalifresh.com` |

@@ -32,12 +32,12 @@ export const metadata: Metadata = {
     'Himalayan spices',
   ],
   authors: [{ name: 'Himali Fresh' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com'),
   openGraph: {
     title: 'Himali Fresh | The Spirit of Himalayas',
     description:
       'Pure and authentic Himalayan food products, pickles, mountain teas, and organic foods.',
-    url: 'https://www.himalifresh.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com',
     siteName: 'Himali Fresh',
     images: [
       {

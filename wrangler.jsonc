@@ -18,7 +18,7 @@
     "NEXT_PUBLIC_BUSINESS_NAME": "Himali Fresh",
     "NEXT_PUBLIC_BUSINESS_TAGLINE": "The Spirit of Himalayas",
     "NEXT_PUBLIC_BUSINESS_ADDRESS": "Dagapur, Siliguri, West Bengal, India",
-    "NEXT_PUBLIC_APP_URL": "https://himalifresh.riteshtayade68.workers.dev",
+    "NEXT_PUBLIC_APP_URL": "https://himalifresh.com",
     "BREVO_SENDER_NAME": "Himali Fresh",
     "TIGRIS_STORAGE_BUCKET": "himalifresh-images",
     "TIGRIS_STORAGE_ENDPOINT": "https://t3.storage.dev"
@@ -31,7 +31,7 @@
       "NEXT_PUBLIC_BUSINESS_NAME": "Himali Fresh",
       "NEXT_PUBLIC_BUSINESS_TAGLINE": "The Spirit of Himalayas",
       "NEXT_PUBLIC_BUSINESS_ADDRESS": "Dagapur, Siliguri, West Bengal, India",
-      "NEXT_PUBLIC_APP_URL": "https://himalifresh.riteshtayade68.workers.dev",
+      "NEXT_PUBLIC_APP_URL": "https://himalifresh.com",
       "BREVO_SENDER_NAME": "Himali Fresh",
       "TIGRIS_STORAGE_BUCKET": "himalifresh-images",
       "TIGRIS_STORAGE_ENDPOINT": "https://t3.storage.dev"

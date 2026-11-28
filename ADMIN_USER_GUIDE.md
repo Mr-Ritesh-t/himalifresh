@@ -5,7 +5,7 @@
 
 ## 1. Accessing the Admin Portal
 
-- Navigate to [https://www.himalifresh.com/admin](https://www.himalifresh.com/admin) or [http://localhost:3000/admin](http://localhost:3000/admin).
+- Navigate to [https://himalifresh.com/admin](https://himalifresh.com/admin) or [http://localhost:3000/admin](http://localhost:3000/admin).
 - Enter your administrator email and master password.
 - Click **Log In Securely**.
 

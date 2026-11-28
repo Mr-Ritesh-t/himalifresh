@@ -44,7 +44,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   ]);
 
   const whatsappNumber = settings?.whatsappNumber || '917477768499';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.himalifresh.com';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://himalifresh.com';
 
   const jsonLd = {
     '@context': 'https://schema.org',
