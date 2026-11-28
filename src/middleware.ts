@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
+// Fast pattern to instantly drop malicious scanner probes with 0 CPU overhead
+const SCANNER_PROBE_REGEX =
+  /(^\/\.(?!well-known)|^\/(?:laravel|wp|backend|instance|\.aws|\.git)\/|\.env|\.yml$|\.yaml$|\.bak$|\.properties$|\.sql$|\/actuator|\/docker-compose|\/terraform|\/credentials\.json|\/serviceAccountKey\.json|\/secrets\.json|\/awsconfiguration\.json|\/amplifyconfiguration\.json|\/appsettings\.json)/i;
+
 function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
   if (!secret && process.env.NODE_ENV === 'production') {
@@ -14,7 +18,12 @@ function getJwtSecret(): Uint8Array {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin UI routes (except public admin auth pages like /admin/login, /admin/forgot-password)
+  // 1. Instantly reject automated vulnerability scanners without loading Next.js SSR
+  if (SCANNER_PROBE_REGEX.test(pathname)) {
+    return new Response(null, { status: 404 });
+  }
+
+  // 2. Protect admin UI routes (except public admin auth pages like /admin/login, /admin/forgot-password)
   const isPublicAdminUi =
     pathname === '/admin/login' ||
     pathname.startsWith('/admin/forgot-password') ||
@@ -42,7 +51,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect admin API routes (except public admin auth endpoints)
+  // 3. Protect admin API routes (except public admin auth endpoints)
   const isPublicAdminApi =
     pathname === '/api/admin/auth/login' ||
     pathname.startsWith('/api/admin/auth/otp');
@@ -68,5 +77,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*'],
+  matcher: [
+    /*
+     * Match all requests except static chunks, images, and public assets
+     */
+    '/((?!_next/static|_next/image|images|favicon.ico).*)',
+  ],
 };

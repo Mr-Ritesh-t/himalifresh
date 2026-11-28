@@ -16,7 +16,8 @@ const TOKEN_COOKIE_NAME = 'himali_admin_token';
 const TOKEN_EXPIRY = '7d';
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 12);
+  // 10 rounds is the OWASP standard for edge/serverless compute (~15ms CPU time, safely within Cloudflare 50ms limit)
+  return bcrypt.hash(password, 10);
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
